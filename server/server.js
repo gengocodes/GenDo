@@ -32,8 +32,10 @@ app.get('/api/test-db', async (req, res) => {
 });
 
 // Routes
-app.use('/api/users', require('./routes/authRoutes'));
-app.use('/api/todos', require('./routes/todoRoutes'));
+const authRoutes = require('./routes/auth');
+app.use('/api/auth', authRoutes);
+app.use('/api/auth/google/callback', authRoutes);
+app.use('/api/todos', require('./routes/todos'));
 
 // Test route
 app.get('/api/test', (req, res) => {

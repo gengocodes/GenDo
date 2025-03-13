@@ -72,7 +72,7 @@ export const TodoList: React.FC = () => {
             <label>Status:</label>
             <select value={filter} onChange={(e) => setFilter(e.target.value as TodoStatus)}>
               <option value="pending">Pending</option>
-              <option value="active">Active</option>
+              <option value="in_progress">In Progress</option>
               <option value="completed">Completed</option>
               <option value="archived">Archived</option>
             </select>
@@ -178,7 +178,7 @@ export const TodoList: React.FC = () => {
                       type="checkbox"
                       checked={todo.status === 'completed'}
                       onChange={() => updateTodo(todo.id, {
-                        status: todo.status === 'completed' ? 'active' : 'completed',
+                        status: todo.status === 'completed' ? 'in_progress' : 'completed',
                         completedAt: todo.status === 'completed' ? null : new Date().toISOString()
                       })}
                     />

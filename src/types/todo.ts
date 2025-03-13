@@ -1,4 +1,4 @@
-export type TodoStatus = 'pending' | 'active' | 'completed' | 'archived';
+export type TodoStatus = 'pending' | 'in_progress' | 'completed' | 'archived';
 export type TodoPriority = 'low' | 'medium' | 'high';
 
 export interface Todo {

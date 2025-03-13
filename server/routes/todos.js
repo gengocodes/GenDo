@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const Todo = require('../models/Todo');
-const auth = require('../middleware/auth');
+const { protect } = require('../middleware/authMiddleware');
 
 // Get all todos for the authenticated user
-router.get('/', auth, async (req, res) => {
+router.get('/', protect, async (req, res) => {
   try {
     const todos = await Todo.find({ userId: req.user._id }).sort({ createdAt: -1 });
     res.json(todos);
@@ -14,7 +14,7 @@ router.get('/', auth, async (req, res) => {
 });
 
 // Create a new todo
-router.post('/', auth, async (req, res) => {
+router.post('/', protect, async (req, res) => {
   try {
     const { title, description, priority, status, dueDate, tags } = req.body;
 
@@ -36,7 +36,7 @@ router.post('/', auth, async (req, res) => {
 });
 
 // Update a todo
-router.put('/:id', auth, async (req, res) => {
+router.put('/:id', protect, async (req, res) => {
   try {
     const { title, description, priority, status, dueDate, tags } = req.body;
     const todo = await Todo.findOne({ _id: req.params.id, userId: req.user._id });
@@ -65,7 +65,7 @@ router.put('/:id', auth, async (req, res) => {
 });
 
 // Delete a todo
-router.delete('/:id', auth, async (req, res) => {
+router.delete('/:id', protect, async (req, res) => {
   try {
     const todo = await Todo.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
     
@@ -80,7 +80,7 @@ router.delete('/:id', auth, async (req, res) => {
 });
 
 // Complete a todo
-router.patch('/:id/complete', auth, async (req, res) => {
+router.patch('/:id/complete', protect, async (req, res) => {
   try {
     const todo = await Todo.findOne({ _id: req.params.id, userId: req.user._id });
     
@@ -99,7 +99,7 @@ router.patch('/:id/complete', auth, async (req, res) => {
 });
 
 // Archive a todo
-router.patch('/:id/archive', auth, async (req, res) => {
+router.patch('/:id/archive', protect, async (req, res) => {
   try {
     const todo = await Todo.findOne({ _id: req.params.id, userId: req.user._id });
     

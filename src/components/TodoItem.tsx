@@ -14,7 +14,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, onUpdate, onDelete }) 
 
   const handleToggleComplete = () => {
     onUpdate(todo.id, {
-      status: todo.status === 'completed' ? 'active' : 'completed',
+      status: todo.status === 'completed' ? 'in_progress' : 'completed',
       completedAt: todo.status === 'completed' ? null : new Date().toISOString()
     });
   };

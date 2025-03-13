@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTodo } from '../context/TodoContext';
-import { Todo } from '../types/todo';
+import { Todo, TodoStatus, TodoPriority } from '../types/todo';
 import './TodoForm.css';
 
 interface TodoFormProps {
@@ -31,7 +31,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onClose, editTodo }) => {
       } else {
         await createTodo({
           ...todoData,
-          status: 'active',
+          status: 'in_progress' as TodoStatus,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         });
