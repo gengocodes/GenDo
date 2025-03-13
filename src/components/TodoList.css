@@ -4,15 +4,24 @@
   padding: 0 1.5rem;
 }
 
+.todo-container {
+  min-height: 100vh;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
 .todo-header {
+  width: 100%;
+  background-color: #fff;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
   margin-bottom: 2rem;
-  background: #fff;
-  padding: 1.5rem;
   border-radius: 16px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .header-top {
@@ -397,6 +406,12 @@
   font-weight: 600;
   margin-bottom: 0.75rem;
   color: #2c3e50;
+}
+
+.todo-content {
+  position: relative;
+  width: 100%;
+  padding: 20px;
 }
 
 @media (max-width: 768px) {
