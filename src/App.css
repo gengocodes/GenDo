@@ -1,0 +1,92 @@
+.landing-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f8f9fa;
+  font-family: 'Arial', sans-serif;
+}
+
+.header {
+  text-align: center;
+  padding: 80px 20px;
+  background-color: #007bff;
+  color: white;
+  width: 100%;
+}
+
+.header h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.header p {
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.get-started {
+  padding: 12px 30px;
+  font-size: 1.2rem;
+  color: #007bff;
+  background-color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.get-started:hover {
+  background-color: #f0f0f0;
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.features {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 50px 20px;
+  max-width: 1200px;
+}
+
+.feature {
+  flex: 1;
+  min-width: 300px;
+  margin: 20px;
+  padding: 30px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
+
+.feature h2 {
+  color: #007bff;
+  margin-bottom: 15px;
+}
+
+.feature p {
+  color: #6c757d;
+  line-height: 1.6;
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.auth-section {
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: #6c757d;
+} 
