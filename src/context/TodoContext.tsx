@@ -48,7 +48,12 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       const response = await axios.get<Todo[]>(`${API_BASE_URL}/todos`, getAuthHeaders());
-      setTodos(response.data);
+      // Map _id to id in the response data
+      const todosWithId = response.data.map(todo => ({
+        ...todo,
+        id: todo._id
+      }));
+      setTodos(todosWithId);
       setError(null);
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Failed to fetch todos';
@@ -66,7 +71,12 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         todo,
         getAuthHeaders()
       );
-      setTodos(prev => [...prev, response.data]);
+      // Map _id to id in the response data
+      const newTodo = {
+        ...response.data,
+        id: response.data._id
+      };
+      setTodos(prev => [...prev, newTodo]);
       setError(null);
       
       // Add to Google Calendar if dueDate is provided
@@ -103,7 +113,12 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         getAuthHeaders()
       );
       console.log('Update response:', response.data);
-      setTodos(prev => prev.map(todo => todo.id === id ? response.data : todo));
+      // Map _id to id in the response data
+      const updatedTodo = {
+        ...response.data,
+        id: response.data._id
+      };
+      setTodos(prev => prev.map(todo => todo.id === id ? updatedTodo : todo));
       setError(null);
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Failed to update todo';
