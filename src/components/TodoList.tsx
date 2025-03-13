@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Todo, TodoStatus, TodoPriority } from '../types/todo';
 import { useTodo } from '../context/TodoContext';
 import { IconType, IconBaseProps } from 'react-icons';
-import { FaTrash, FaClock, FaExclamationCircle } from 'react-icons/fa';
+import { FaTrash, FaClock, FaExclamationCircle, FaCircle, FaCheckCircle, FaPlayCircle, FaArchive } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import './TodoList.css';
 
@@ -83,7 +83,21 @@ export const TodoList: React.FC = () => {
   };
 
   const handleStatusChange = async (todo: Todo) => {
-    const newStatus = todo.status === 'completed' ? 'in_progress' : 'completed';
+    let newStatus: TodoStatus;
+    switch (todo.status) {
+      case 'pending':
+        newStatus = 'in_progress';
+        break;
+      case 'in_progress':
+        newStatus = 'completed';
+        break;
+      case 'completed':
+        newStatus = 'in_progress';
+        break;
+      default:
+        newStatus = 'pending';
+    }
+    
     try {
       await updateTodo(todo.id, {
         status: newStatus,
@@ -95,7 +109,9 @@ export const TodoList: React.FC = () => {
   };
 
   const filteredTodos = todos.filter(todo => {
-    const statusMatch = todo.status === filter;
+    const statusMatch = filter === 'in_progress' ? 
+      (todo.status === 'pending' || todo.status === 'in_progress') : 
+      todo.status === filter;
     const priorityMatch = priorityFilter === 'all' || todo.priority === priorityFilter;
     const searchMatch = todo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                        todo.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -127,6 +143,39 @@ export const TodoList: React.FC = () => {
     return new Date(todo.dueDate) < new Date();
   };
 
+  const getStatusIcon = (status: TodoStatus): JSX.Element => {
+    const iconProps: IconBaseProps = {
+      className: `status-icon ${status}`,
+      'aria-hidden': true
+    };
+    
+    switch (status) {
+      case 'completed':
+        return React.createElement(FaCheckCircle as React.ComponentType<IconBaseProps>, iconProps);
+      case 'in_progress':
+        return React.createElement(FaPlayCircle as React.ComponentType<IconBaseProps>, iconProps);
+      case 'archived':
+        return React.createElement(FaArchive as React.ComponentType<IconBaseProps>, iconProps);
+      default:
+        return React.createElement(FaCircle as React.ComponentType<IconBaseProps>, iconProps);
+    }
+  };
+
+  const getStatusLabel = (status: TodoStatus): string => {
+    switch (status) {
+      case 'completed':
+        return 'Completed';
+      case 'in_progress':
+        return 'In Progress';
+      case 'pending':
+        return 'Not Started';
+      case 'archived':
+        return 'Archived';
+      default:
+        return 'Not Started';
+    }
+  };
+
   return (
     <div className="todo-list">
       <div className="todo-header">
@@ -148,8 +197,7 @@ export const TodoList: React.FC = () => {
           <div className="filter-group">
             <label>Status:</label>
             <select value={filter} onChange={(e) => setFilter(e.target.value as TodoStatus)}>
-              <option value="pending">Pending</option>
-              <option value="in_progress">In Progress</option>
+              <option value="in_progress">Active Tasks</option>
               <option value="completed">Completed</option>
               <option value="archived">Archived</option>
             </select>
@@ -278,14 +326,13 @@ export const TodoList: React.FC = () => {
                 >
                   <td>
                     <motion.div
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      className="status-cell"
+                      onClick={() => handleStatusChange(todo)}
                     >
-                      <input
-                        type="checkbox"
-                        checked={todo.status === 'completed'}
-                        onChange={() => handleStatusChange(todo)}
-                      />
+                      {getStatusIcon(todo.status)}
+                      <span className="status-label">{getStatusLabel(todo.status)}</span>
                     </motion.div>
                   </td>
                   <td>
@@ -312,9 +359,11 @@ export const TodoList: React.FC = () => {
                         whileHover={{ scale: 1.1 }}
                         whileTap={{ scale: 0.9 }}
                         onClick={() => handleDeleteClick(todo)}
-                        className="delete-button"
+                        className="action-button delete-button"
+                        title="Delete Task"
                       >
                         {React.createElement(FaTrash as React.ComponentType<IconBaseProps>, { 'aria-hidden': true })}
+                        <span className="button-label">Delete</span>
                       </motion.button>
                     </div>
                   </td>
