@@ -1,6 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 import { Todo } from '../types/todo';
+import { useAuth } from './AuthContext';
+
+const API_BASE_URL = 'http://localhost:5000/api';
 
 interface TodoContextType {
   todos: Todo[];
@@ -22,18 +25,28 @@ export const useTodo = () => {
 };
 
 export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Configure axios headers with authentication token
+  const getAuthHeaders = () => ({
+    headers: {
+      'Authorization': `Bearer ${user?.token}`
+    }
+  });
+
   useEffect(() => {
-    fetchTodos();
-  }, []);
+    if (user) {
+      fetchTodos();
+    }
+  }, [user]);
 
   const fetchTodos = async () => {
     try {
       setLoading(true);
-      const response = await axios.get<Todo[]>('/api/todos');
+      const response = await axios.get<Todo[]>(`${API_BASE_URL}/todos`, getAuthHeaders());
       setTodos(response.data);
       setError(null);
     } catch (err) {
@@ -46,9 +59,31 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const createTodo = async (todo: Partial<Todo>) => {
     try {
-      const response = await axios.post<Todo>('/api/todos', todo);
+      const response = await axios.post<Todo>(
+        `${API_BASE_URL}/todos`, 
+        todo,
+        getAuthHeaders()
+      );
       setTodos(prev => [...prev, response.data]);
       setError(null);
+      
+      // Add to Google Calendar if dueDate is provided
+      if (todo.dueDate) {
+        try {
+          await axios.post(
+            `${API_BASE_URL}/calendar/add`,
+            {
+              title: todo.title,
+              description: todo.description,
+              startTime: todo.dueDate,
+              endTime: todo.dueDate
+            },
+            getAuthHeaders()
+          );
+        } catch (err) {
+          console.error('Failed to add event to Google Calendar:', err);
+        }
+      }
     } catch (err) {
       setError('Failed to create todo');
       console.error('Error creating todo:', err);
@@ -58,7 +93,11 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateTodo = async (id: string, updates: Partial<Todo>) => {
     try {
-      const response = await axios.put<Todo>(`/api/todos/${id}`, updates);
+      const response = await axios.put<Todo>(
+        `${API_BASE_URL}/todos/${id}`,
+        updates,
+        getAuthHeaders()
+      );
       setTodos(prev => prev.map(todo => todo.id === id ? response.data : todo));
       setError(null);
     } catch (err) {
@@ -70,7 +109,10 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const deleteTodo = async (id: string) => {
     try {
-      await axios.delete(`/api/todos/${id}`);
+      await axios.delete(
+        `${API_BASE_URL}/todos/${id}`,
+        getAuthHeaders()
+      );
       setTodos(prev => prev.filter(todo => todo.id !== id));
       setError(null);
     } catch (err) {
