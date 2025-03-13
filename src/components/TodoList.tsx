@@ -1,11 +1,40 @@
 import React, { useState } from 'react';
 import { Todo, TodoStatus, TodoPriority } from '../types/todo';
 import { useTodo } from '../context/TodoContext';
+import { IconType } from 'react-icons';
+import { FaTrash, FaClock, FaExclamationCircle } from 'react-icons/fa';
+import { motion, AnimatePresence } from 'framer-motion';
 import './TodoList.css';
+
+interface DeleteConfirmationProps {
+  todo: Todo;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({ todo, onConfirm, onCancel }) => (
+  <div className="delete-confirmation-overlay">
+    <motion.div 
+      className="delete-confirmation"
+      initial={{ scale: 0.5, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      exit={{ scale: 0.5, opacity: 0 }}
+    >
+      <h3>Delete Task</h3>
+      <p>Are you sure you want to delete "{todo.title}"?</p>
+      <p className="warning">This action cannot be undone.</p>
+      <div className="confirmation-actions">
+        <button className="cancel-btn" onClick={onCancel}>Cancel</button>
+        <button className="delete-btn" onClick={onConfirm}>Delete</button>
+      </div>
+    </motion.div>
+  </div>
+);
 
 export const TodoList: React.FC = () => {
   const { todos, createTodo, updateTodo, deleteTodo } = useTodo();
   const [showForm, setShowForm] = useState(false);
+  const [todoToDelete, setTodoToDelete] = useState<Todo | null>(null);
   const [newTodo, setNewTodo] = useState({
     title: '',
     description: '',
@@ -14,6 +43,7 @@ export const TodoList: React.FC = () => {
   });
   const [filter, setFilter] = useState<TodoStatus>('pending');
   const [priorityFilter, setPriorityFilter] = useState<TodoPriority | 'all'>('all');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,31 +71,78 @@ export const TodoList: React.FC = () => {
     setNewTodo(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleDeleteClick = (todo: Todo) => {
+    setTodoToDelete(todo);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (todoToDelete) {
+      await deleteTodo(todoToDelete.id);
+      setTodoToDelete(null);
+    }
+  };
+
+  const handleStatusChange = async (todo: Todo) => {
+    const newStatus = todo.status === 'completed' ? 'in_progress' : 'completed';
+    try {
+      await updateTodo(todo.id, {
+        status: newStatus,
+        completedAt: newStatus === 'completed' ? new Date().toISOString() : null
+      });
+    } catch (error) {
+      console.error('Failed to update todo status:', error);
+    }
+  };
+
   const filteredTodos = todos.filter(todo => {
     const statusMatch = todo.status === filter;
     const priorityMatch = priorityFilter === 'all' || todo.priority === priorityFilter;
-    return statusMatch && priorityMatch;
+    const searchMatch = todo.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                       todo.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                       false;
+    return statusMatch && priorityMatch && searchMatch;
   });
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString();
+    return new Date(dateString).toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit'
+    });
   };
 
-  const getPriorityColor = (priority: TodoPriority) => {
-    switch (priority) {
-      case 'high': return 'var(--error)';
-      case 'medium': return '#f57c00';
-      case 'low': return '#7cb342';
-      default: return 'var(--text)';
-    }
+  const getPriorityIcon = (priority: TodoPriority): JSX.Element => {
+    const iconProps = {
+      className: `priority-icon ${priority}`,
+      'aria-hidden': 'true'
+    };
+    
+    return <FaExclamationCircle {...iconProps} />;
+  };
+
+  const isOverdue = (todo: Todo) => {
+    if (!todo.dueDate || todo.status === 'completed') return false;
+    return new Date(todo.dueDate) < new Date();
   };
 
   return (
     <div className="todo-list">
       <div className="todo-header">
-        <button className="add-button" onClick={() => setShowForm(true)}>
-          Add New Task
-        </button>
+        <div className="header-top">
+          <button className="add-button" onClick={() => setShowForm(true)}>
+            Add New Task
+          </button>
+          <div className="search-bar">
+            <input
+              type="text"
+              placeholder="Search tasks..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+        </div>
 
         <div className="filters">
           <div className="filter-group">
@@ -92,7 +169,12 @@ export const TodoList: React.FC = () => {
 
       {showForm && (
         <div className="todo-form-overlay">
-          <div className="todo-form">
+          <motion.div 
+            className="todo-form"
+            initial={{ y: -50, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -50, opacity: 0 }}
+          >
             <h2>Add New Task</h2>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
@@ -133,7 +215,7 @@ export const TodoList: React.FC = () => {
               </div>
 
               <div className="form-group">
-                <label htmlFor="dueDate">Estimated Completion Date</label>
+                <label htmlFor="dueDate">Due Date</label>
                 <input
                   type="datetime-local"
                   id="dueDate"
@@ -141,7 +223,6 @@ export const TodoList: React.FC = () => {
                   value={newTodo.dueDate}
                   onChange={handleChange}
                 />
-                <small>This task will be added to your Google Calendar if a date is set.</small>
               </div>
 
               <div className="form-actions">
@@ -149,14 +230,29 @@ export const TodoList: React.FC = () => {
                 <button type="submit">Create Task</button>
               </div>
             </form>
-          </div>
+          </motion.div>
         </div>
       )}
 
+      <AnimatePresence>
+        {todoToDelete && (
+          <DeleteConfirmation
+            todo={todoToDelete}
+            onConfirm={handleDeleteConfirm}
+            onCancel={() => setTodoToDelete(null)}
+          />
+        )}
+      </AnimatePresence>
+
       {filteredTodos.length === 0 ? (
-        <div className="empty-state">
+        <motion.div 
+          className="empty-state"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+        >
           <p>No tasks found</p>
-        </div>
+          {searchTerm && <p>Try adjusting your search or filters</p>}
+        </motion.div>
       ) : (
         <div className="table-container">
           <table className="todo-table">
@@ -172,32 +268,57 @@ export const TodoList: React.FC = () => {
             </thead>
             <tbody>
               {filteredTodos.map(todo => (
-                <tr key={todo.id} className={todo.status}>
+                <motion.tr 
+                  key={todo.id} 
+                  className={`${todo.status} ${isOverdue(todo) ? 'overdue' : ''}`}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  layout
+                >
                   <td>
-                    <input
-                      type="checkbox"
-                      checked={todo.status === 'completed'}
-                      onChange={() => updateTodo(todo.id, {
-                        status: todo.status === 'completed' ? 'in_progress' : 'completed',
-                        completedAt: todo.status === 'completed' ? null : new Date().toISOString()
-                      })}
-                    />
-                  </td>
-                  <td>{todo.title}</td>
-                  <td>
-                    <span
-                      className="priority-badge"
-                      style={{ backgroundColor: getPriorityColor(todo.priority) }}
+                    <motion.div
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                     >
+                      <input
+                        type="checkbox"
+                        checked={todo.status === 'completed'}
+                        onChange={() => handleStatusChange(todo)}
+                      />
+                    </motion.div>
+                  </td>
+                  <td>
+                    <div className="todo-title-cell">
+                      <span className="todo-title">{todo.title}</span>
+                      {isOverdue(todo) && (
+                        <span className="overdue-badge">
+                          <FaClock aria-hidden="true" /> Overdue
+                        </span>
+                      )}
+                    </div>
+                  </td>
+                  <td>
+                    <span className="priority-badge">
+                      {getPriorityIcon(todo.priority)}
                       {todo.priority}
                     </span>
                   </td>
-                  <td>{todo.description}</td>
+                  <td>{todo.description || '-'}</td>
                   <td>{todo.dueDate ? formatDate(todo.dueDate) : '-'}</td>
                   <td>
-                    <button onClick={() => deleteTodo(todo.id)}>Delete</button>
+                    <div className="action-buttons">
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => handleDeleteClick(todo)}
+                        className="delete-button"
+                      >
+                        <FaTrash aria-hidden="true" />
+                      </motion.button>
+                    </div>
                   </td>
-                </tr>
+                </motion.tr>
               ))}
             </tbody>
           </table>
