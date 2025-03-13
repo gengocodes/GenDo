@@ -5,7 +5,7 @@ const Todo = require('../models/Todo');
 // @access  Private
 const getTodos = async (req, res) => {
   try {
-    const todos = await Todo.find({ user: req.user._id }).sort({ createdAt: -1 });
+    const todos = await Todo.find({ userId: req.user._id }).sort({ createdAt: -1 });
     res.json(todos);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -17,20 +17,25 @@ const getTodos = async (req, res) => {
 // @access  Private
 const createTodo = async (req, res) => {
   try {
-    const { text } = req.body;
+    const { title, description, priority, status, dueDate, tags } = req.body;
 
-    if (!text) {
-      return res.status(400).json({ message: 'Please add a text field' });
+    if (!title) {
+      return res.status(400).json({ message: 'Title is required' });
     }
 
     const todo = await Todo.create({
-      text,
-      user: req.user._id
+      title,
+      description: description || '',
+      priority: priority || 'medium',
+      status: status || 'pending',
+      dueDate: dueDate || null,
+      tags: tags || [],
+      userId: req.user._id
     });
 
     res.status(201).json(todo);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -45,20 +50,20 @@ const updateTodo = async (req, res) => {
       return res.status(404).json({ message: 'Todo not found' });
     }
 
-    // Check if the todo belongs to the user
-    if (todo.user.toString() !== req.user._id.toString()) {
+    // Make sure user owns todo
+    if (todo.userId.toString() !== req.user._id.toString()) {
       return res.status(401).json({ message: 'User not authorized' });
     }
 
     const updatedTodo = await Todo.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      { ...req.body, updatedAt: Date.now() },
       { new: true }
     );
 
     res.json(updatedTodo);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
@@ -73,16 +78,22 @@ const deleteTodo = async (req, res) => {
       return res.status(404).json({ message: 'Todo not found' });
     }
 
-    // Check if the todo belongs to the user
-    if (todo.user.toString() !== req.user._id.toString()) {
+    // Make sure user owns todo
+    if (todo.userId.toString() !== req.user._id.toString()) {
       return res.status(401).json({ message: 'User not authorized' });
     }
 
     await todo.remove();
-    res.json({ message: 'Todo removed' });
+
+    res.json({ id: req.params.id });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
 };
 
-module.exports = { getTodos, createTodo, updateTodo, deleteTodo }; 
+module.exports = {
+  getTodos,
+  createTodo,
+  updateTodo,
+  deleteTodo
+}; 

@@ -19,11 +19,12 @@ export const TodoList: React.FC = () => {
     e.preventDefault();
     if (newTodo.title.trim()) {
       createTodo({
-        ...newTodo,
         title: newTodo.title.trim(),
-        status: 'active',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        description: newTodo.description,
+        priority: newTodo.priority,
+        status: 'pending',
+        dueDate: newTodo.dueDate || undefined,
+        tags: []
       });
       setNewTodo({
         title: '',
