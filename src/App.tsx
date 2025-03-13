@@ -2,6 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { TodoProvider } from './context/TodoContext';
+import Navigation from './components/Navigation';
 import LandingPage from './components/LandingPage';
 import About from './components/About';
 import Dashboard from './components/Dashboard';
@@ -15,6 +16,7 @@ const App: React.FC = () => {
       <TodoProvider>
         <Router>
           <div className="App">
+            <Navigation />
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/about" element={<About />} />

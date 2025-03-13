@@ -71,6 +71,7 @@ export const TodoList: React.FC = () => {
           <div className="filter-group">
             <label>Status:</label>
             <select value={filter} onChange={(e) => setFilter(e.target.value as TodoStatus)}>
+              <option value="pending">Pending</option>
               <option value="active">Active</option>
               <option value="completed">Completed</option>
               <option value="archived">Archived</option>
