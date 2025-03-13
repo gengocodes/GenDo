@@ -49,6 +49,9 @@ const Auth: React.FC = () => {
 
   return (
     <div className="auth-section">
+      <button className="back-button" onClick={() => navigate('/')}>
+        ← Back to Home
+      </button>
       <div className="auth-form-container">
         <h2>{isRegistering ? 'Create Account' : 'Welcome Back'}</h2>
         <p className="auth-subtitle">

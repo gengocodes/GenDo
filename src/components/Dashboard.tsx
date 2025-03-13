@@ -1,6 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
-import TodoList from './TodoList';
+import { TodoList } from './TodoList';
 import './Dashboard.css';
 
 const Dashboard: React.FC = () => {

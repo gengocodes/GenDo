@@ -1,84 +1,68 @@
 import React, { useState } from 'react';
-import { useTodo } from '../context/TodoContext';
+import { Todo } from '../types/todo';
 import './TodoItem.css';
 
 interface TodoItemProps {
-  id: string;
-  text: string;
-  completed: boolean;
+  todo: Todo;
+  onUpdate: (id: string, updates: Partial<Todo>) => void;
+  onDelete: (id: string) => void;
 }
 
-const TodoItem: React.FC<TodoItemProps> = ({ id, text, completed }) => {
+export const TodoItem: React.FC<TodoItemProps> = ({ todo, onUpdate, onDelete }) => {
   const [isEditing, setIsEditing] = useState(false);
-  const [editText, setEditText] = useState(text);
-  const { updateTodo, deleteTodo } = useTodo();
+  const [editTitle, setEditTitle] = useState(todo.title);
 
   const handleToggleComplete = () => {
-    updateTodo(id, { completed: !completed });
+    onUpdate(todo.id, {
+      status: todo.status === 'completed' ? 'active' : 'completed',
+      completedAt: todo.status === 'completed' ? null : new Date().toISOString()
+    });
   };
 
-  const handleEdit = () => {
-    setIsEditing(true);
-    setEditText(text);
-  };
-
-  const handleSave = () => {
-    if (editText.trim()) {
-      updateTodo(id, { text: editText });
+  const handleSave = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editTitle.trim()) {
+      onUpdate(todo.id, { title: editTitle.trim() });
       setIsEditing(false);
     }
   };
 
   const handleCancel = () => {
+    setEditTitle(todo.title);
     setIsEditing(false);
-    setEditText(text);
-  };
-
-  const handleDelete = () => {
-    deleteTodo(id);
   };
 
   return (
-    <div className={`todo-item ${completed ? 'completed' : ''}`}>
+    <div className={`todo-item ${todo.status === 'completed' ? 'completed' : ''}`}>
       {isEditing ? (
-        <div className="todo-edit">
+        <form className="edit-mode" onSubmit={handleSave}>
           <input
             type="text"
-            value={editText}
-            onChange={(e) => setEditText(e.target.value)}
+            value={editTitle}
+            onChange={(e) => setEditTitle(e.target.value)}
             autoFocus
           />
-          <div className="todo-actions">
-            <button onClick={handleSave} className="save-btn">
-              Save
-            </button>
-            <button onClick={handleCancel} className="cancel-btn">
-              Cancel
-            </button>
+          <div className="edit-actions">
+            <button type="submit">Save</button>
+            <button type="button" onClick={handleCancel}>Cancel</button>
           </div>
-        </div>
+        </form>
       ) : (
-        <>
+        <div className="view-mode">
           <div className="todo-content">
             <input
               type="checkbox"
-              checked={completed}
+              checked={todo.status === 'completed'}
               onChange={handleToggleComplete}
             />
-            <span className="todo-text">{text}</span>
+            <span className="todo-title">{todo.title}</span>
           </div>
           <div className="todo-actions">
-            <button onClick={handleEdit} className="edit-btn">
-              Edit
-            </button>
-            <button onClick={handleDelete} className="delete-btn">
-              Delete
-            </button>
+            <button onClick={() => setIsEditing(true)}>Edit</button>
+            <button onClick={() => onDelete(todo.id)}>Delete</button>
           </div>
-        </>
+        </div>
       )}
     </div>
   );
-};
-
-export default TodoItem; 
+}; 

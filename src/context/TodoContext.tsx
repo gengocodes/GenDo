@@ -1,20 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuth } from './AuthContext';
-
-interface Todo {
-  _id: string;
-  text: string;
-  completed: boolean;
-  createdAt: string;
-}
+import { Todo } from '../types/todo';
 
 interface TodoContextType {
   todos: Todo[];
   loading: boolean;
   error: string | null;
-  getTodos: () => Promise<void>;
-  addTodo: (text: string) => Promise<void>;
+  createTodo: (todo: Partial<Todo>) => Promise<void>;
   updateTodo: (id: string, updates: Partial<Todo>) => Promise<void>;
   deleteTodo: (id: string) => Promise<void>;
 }
@@ -29,120 +21,64 @@ export const useTodo = () => {
   return context;
 };
 
-interface TodoProviderProps {
-  children: ReactNode;
-}
-
-export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
+export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
 
-  // Configure axios with auth token
-  const configureAxios = () => {
-    if (!user) return null;
-    
-    return {
-      headers: {
-        Authorization: `Bearer ${user.token}`
-      }
-    };
-  };
+  useEffect(() => {
+    fetchTodos();
+  }, []);
 
-  const getTodos = async () => {
-    if (!user) return;
-    
+  const fetchTodos = async () => {
     try {
       setLoading(true);
-      setError(null);
-      const config = configureAxios();
-      if (!config) return;
-      
-      const response = await axios.get('http://localhost:5000/api/todos', config);
+      const response = await axios.get<Todo[]>('/api/todos');
       setTodos(response.data);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to fetch todos');
+      setError(null);
+    } catch (err) {
+      setError('Failed to fetch todos');
+      console.error('Error fetching todos:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const addTodo = async (text: string) => {
-    if (!user) return;
-    
+  const createTodo = async (todo: Partial<Todo>) => {
     try {
-      setLoading(true);
+      const response = await axios.post<Todo>('/api/todos', todo);
+      setTodos(prev => [...prev, response.data]);
       setError(null);
-      const config = configureAxios();
-      if (!config) return;
-      
-      const response = await axios.post(
-        'http://localhost:5000/api/todos',
-        { text },
-        config
-      );
-      
-      setTodos([response.data, ...todos]);
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to add todo');
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      setError('Failed to create todo');
+      console.error('Error creating todo:', err);
+      throw err;
     }
   };
 
   const updateTodo = async (id: string, updates: Partial<Todo>) => {
-    if (!user) return;
-    
     try {
-      setLoading(true);
+      const response = await axios.put<Todo>(`/api/todos/${id}`, updates);
+      setTodos(prev => prev.map(todo => todo.id === id ? response.data : todo));
       setError(null);
-      const config = configureAxios();
-      if (!config) return;
-      
-      const response = await axios.put(
-        `http://localhost:5000/api/todos/${id}`,
-        updates,
-        config
-      );
-      
-      setTodos(
-        todos.map((todo) => (todo._id === id ? response.data : todo))
-      );
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to update todo');
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      setError('Failed to update todo');
+      console.error('Error updating todo:', err);
+      throw err;
     }
   };
 
   const deleteTodo = async (id: string) => {
-    if (!user) return;
-    
     try {
-      setLoading(true);
+      await axios.delete(`/api/todos/${id}`);
+      setTodos(prev => prev.filter(todo => todo.id !== id));
       setError(null);
-      const config = configureAxios();
-      if (!config) return;
-      
-      await axios.delete(`http://localhost:5000/api/todos/${id}`, config);
-      
-      setTodos(todos.filter((todo) => todo._id !== id));
-    } catch (err: any) {
-      setError(err.response?.data?.message || 'Failed to delete todo');
-    } finally {
-      setLoading(false);
+    } catch (err) {
+      setError('Failed to delete todo');
+      console.error('Error deleting todo:', err);
+      throw err;
     }
   };
-
-  // Load todos when user changes
-  useEffect(() => {
-    if (user) {
-      getTodos();
-    } else {
-      setTodos([]);
-    }
-  }, [user]);
 
   return (
     <TodoContext.Provider
@@ -150,8 +86,7 @@ export const TodoProvider: React.FC<TodoProviderProps> = ({ children }) => {
         todos,
         loading,
         error,
-        getTodos,
-        addTodo,
+        createTodo,
         updateTodo,
         deleteTodo
       }}
