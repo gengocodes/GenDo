@@ -6,13 +6,14 @@ import LandingPage from './components/LandingPage';
 import About from './components/About';
 import Dashboard from './components/Dashboard';
 import Auth from './components/Auth';
+import { Settings } from './components/Settings';
 import './App.css';
 
 const App: React.FC = () => {
   return (
-    <Router>
-      <AuthProvider>
-        <TodoProvider>
+    <AuthProvider>
+      <TodoProvider>
+        <Router>
           <div className="App">
             <Routes>
               <Route path="/" element={<LandingPage />} />
@@ -26,12 +27,20 @@ const App: React.FC = () => {
                   </PrivateRoute>
                 }
               />
+              <Route
+                path="/settings"
+                element={
+                  <PrivateRoute>
+                    <Settings />
+                  </PrivateRoute>
+                }
+              />
               <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>
-        </TodoProvider>
-      </AuthProvider>
-    </Router>
+        </Router>
+      </TodoProvider>
+    </AuthProvider>
   );
 };
 

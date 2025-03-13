@@ -12,7 +12,7 @@ export const TodoList: React.FC = () => {
     priority: 'medium' as TodoPriority,
     dueDate: ''
   });
-  const [filter, setFilter] = useState<TodoStatus>('active');
+  const [filter, setFilter] = useState<TodoStatus>('pending');
   const [priorityFilter, setPriorityFilter] = useState<TodoPriority | 'all'>('all');
 
   const handleSubmit = (e: React.FormEvent) => {

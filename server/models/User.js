@@ -4,23 +4,25 @@ const bcrypt = require('bcryptjs');
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please add a name']
+    required: [true, 'Name is required']
   },
   email: {
     type: String,
-    required: [true, 'Please add an email'],
+    required: [true, 'Email is required'],
     unique: true,
-    match: [/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/, 'Please add a valid email']
+    lowercase: true
   },
   password: {
     type: String,
-    required: [true, 'Please add a password'],
-    minlength: [6, 'Password must be at least 6 characters']
+    required: [true, 'Password is required']
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
+  googleAuth: {
+    accessToken: String,
+    refreshToken: String,
+    email: String
   }
+}, {
+  timestamps: true
 });
 
 // Hash password before saving
@@ -29,24 +31,13 @@ userSchema.pre('save', async function(next) {
     return next();
   }
   
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error);
-  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Method to compare password
+// Compare password method
 userSchema.methods.matchPassword = async function(enteredPassword) {
-  try {
-    return await bcrypt.compare(enteredPassword, this.password);
-  } catch (error) {
-    throw new Error('Password comparison failed');
-  }
+  return await bcrypt.compare(enteredPassword, this.password);
 };
 
-const User = mongoose.model('User', userSchema);
-
-module.exports = User; 
+module.exports = mongoose.model('User', userSchema); 

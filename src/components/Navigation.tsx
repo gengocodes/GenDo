@@ -15,6 +15,11 @@ const Navigation: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const handleLogout = () => {
+    logout();
+    setIsMenuOpen(false);
+  };
+
   return (
     <nav className="navbar">
       <Link to="/" className="navbar-brand">
@@ -38,11 +43,11 @@ const Navigation: React.FC = () => {
             <Link to="/dashboard" className={`nav-link ${isActive('/dashboard')}`} onClick={() => setIsMenuOpen(false)}>
               Dashboard
             </Link>
+            <Link to="/settings" className={`nav-link ${isActive('/settings')}`} onClick={() => setIsMenuOpen(false)}>
+              Settings
+            </Link>
             <button 
-              onClick={() => {
-                logout();
-                setIsMenuOpen(false);
-              }} 
+              onClick={handleLogout} 
               className="nav-link" 
               style={{ border: 'none', background: 'none', cursor: 'pointer' }}
             >
