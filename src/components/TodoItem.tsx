@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Todo } from '../types/todo';
+import { Todo, TodoStatus } from '../types/todo';
 import './TodoItem.css';
 
 interface TodoItemProps {

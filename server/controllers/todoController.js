@@ -44,26 +44,38 @@ const createTodo = async (req, res) => {
 // @access  Private
 const updateTodo = async (req, res) => {
   try {
-    const todo = await Todo.findById(req.params.id);
-
+    const { title, description, priority, status, dueDate, tags, completedAt } = req.body;
+    
+    // Validate the todo exists and belongs to user
+    const todo = await Todo.findOne({ _id: req.params.id, userId: req.user._id });
     if (!todo) {
       return res.status(404).json({ message: 'Todo not found' });
     }
 
-    // Make sure user owns todo
-    if (todo.userId.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'User not authorized' });
+    // Update fields if provided
+    if (title !== undefined) todo.title = title;
+    if (description !== undefined) todo.description = description;
+    if (priority !== undefined) todo.priority = priority;
+    if (status !== undefined) {
+      todo.status = status;
+      if (status === 'completed' && !todo.completedAt) {
+        todo.completedAt = new Date();
+      } else if (status !== 'completed') {
+        todo.completedAt = null;
+      }
     }
+    if (dueDate !== undefined) todo.dueDate = dueDate;
+    if (tags !== undefined) todo.tags = tags;
+    if (completedAt !== undefined) todo.completedAt = completedAt;
 
-    const updatedTodo = await Todo.findByIdAndUpdate(
-      req.params.id,
-      { ...req.body, updatedAt: Date.now() },
-      { new: true }
-    );
-
+    const updatedTodo = await todo.save();
     res.json(updatedTodo);
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Update todo error:', error);
+    if (error.name === 'ValidationError') {
+      return res.status(400).json({ message: error.message });
+    }
+    res.status(500).json({ message: 'Server error while updating todo' });
   }
 };
 
@@ -72,22 +84,26 @@ const updateTodo = async (req, res) => {
 // @access  Private
 const deleteTodo = async (req, res) => {
   try {
-    const todo = await Todo.findById(req.params.id);
+    if (!req.params.id) {
+      return res.status(400).json({ message: 'Todo ID is required' });
+    }
+
+    const todo = await Todo.findOneAndDelete({ 
+      _id: req.params.id,
+      userId: req.user._id 
+    });
 
     if (!todo) {
       return res.status(404).json({ message: 'Todo not found' });
     }
 
-    // Make sure user owns todo
-    if (todo.userId.toString() !== req.user._id.toString()) {
-      return res.status(401).json({ message: 'User not authorized' });
-    }
-
-    await todo.remove();
-
     res.json({ id: req.params.id });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error('Delete todo error:', error);
+    if (error.name === 'CastError') {
+      return res.status(400).json({ message: 'Invalid todo ID format' });
+    }
+    res.status(500).json({ message: 'Server error while deleting todo' });
   }
 };
 
