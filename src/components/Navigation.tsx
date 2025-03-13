@@ -22,7 +22,7 @@ const Navigation: React.FC = () => {
 
   return (
     <nav className="navbar">
-      <Link to="/" className="navbar-brand">
+      <Link to={isAuthenticated ? '/dashboard' : '/'} className="navbar-brand">
         <span role="img" aria-label="check mark">✓</span>
         Gendo
       </Link>
@@ -32,12 +32,16 @@ const Navigation: React.FC = () => {
       </button>
 
       <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
-        <Link to="/" className={`nav-link ${isActive('/')}`} onClick={() => setIsMenuOpen(false)}>
-          Home
-        </Link>
-        <Link to="/about" className={`nav-link ${isActive('/about')}`} onClick={() => setIsMenuOpen(false)}>
-          About
-        </Link>
+        {!isAuthenticated && (
+          <>
+            <Link to="/" className={`nav-link ${isActive('/')}`} onClick={() => setIsMenuOpen(false)}>
+              Home
+            </Link>
+            <Link to="/about" className={`nav-link ${isActive('/about')}`} onClick={() => setIsMenuOpen(false)}>
+              About
+            </Link>
+          </>
+        )}
         {isAuthenticated ? (
           <>
             <Link to="/dashboard" className={`nav-link ${isActive('/dashboard')}`} onClick={() => setIsMenuOpen(false)}>
