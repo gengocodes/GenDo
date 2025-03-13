@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Todo, TodoStatus, TodoPriority } from '../types/todo';
 import { useTodo } from '../context/TodoContext';
-import { IconType } from 'react-icons';
+import { IconType, IconBaseProps } from 'react-icons';
 import { FaTrash, FaClock, FaExclamationCircle } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import './TodoList.css';
@@ -114,12 +114,12 @@ export const TodoList: React.FC = () => {
   };
 
   const getPriorityIcon = (priority: TodoPriority): JSX.Element => {
-    const iconProps = {
+    const iconProps: IconBaseProps = {
       className: `priority-icon ${priority}`,
-      'aria-hidden': 'true'
+      'aria-hidden': true
     };
     
-    return <FaExclamationCircle {...iconProps} />;
+    return React.createElement(FaExclamationCircle as React.ComponentType<IconBaseProps>, iconProps);
   };
 
   const isOverdue = (todo: Todo) => {
@@ -293,7 +293,7 @@ export const TodoList: React.FC = () => {
                       <span className="todo-title">{todo.title}</span>
                       {isOverdue(todo) && (
                         <span className="overdue-badge">
-                          <FaClock aria-hidden="true" /> Overdue
+                          {React.createElement(FaClock as React.ComponentType<IconBaseProps>, { 'aria-hidden': true })} Overdue
                         </span>
                       )}
                     </div>
@@ -314,7 +314,7 @@ export const TodoList: React.FC = () => {
                         onClick={() => handleDeleteClick(todo)}
                         className="delete-button"
                       >
-                        <FaTrash aria-hidden="true" />
+                        {React.createElement(FaTrash as React.ComponentType<IconBaseProps>, { 'aria-hidden': true })}
                       </motion.button>
                     </div>
                   </td>
