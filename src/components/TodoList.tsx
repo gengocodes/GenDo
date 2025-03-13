@@ -168,11 +168,11 @@ export const TodoList: React.FC = () => {
       case 'in_progress':
         return 'In Progress';
       case 'pending':
-        return 'Not Started';
+        return 'Pending';
       case 'archived':
         return 'Archived';
       default:
-        return 'Not Started';
+        return 'Pending';
     }
   };
 
@@ -181,7 +181,7 @@ export const TodoList: React.FC = () => {
       <div className="todo-header">
         <div className="header-top">
           <button className="add-button" onClick={() => setShowForm(true)}>
-            Add New Task
+            + New Task
           </button>
           <div className="search-bar">
             <input
@@ -206,10 +206,10 @@ export const TodoList: React.FC = () => {
           <div className="filter-group">
             <label>Priority:</label>
             <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value as TodoPriority | 'all')}>
-              <option value="all">All</option>
-              <option value="low">Low</option>
-              <option value="medium">Medium</option>
-              <option value="high">High</option>
+              <option value="all">ALL</option>
+              <option value="low">LOW</option>
+              <option value="medium">MEDIUM</option>
+              <option value="high">HIGH</option>
             </select>
           </div>
         </div>
@@ -223,7 +223,7 @@ export const TodoList: React.FC = () => {
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -50, opacity: 0 }}
           >
-            <h2>Add New Task</h2>
+            <h2>New Task</h2>
             <form onSubmit={handleSubmit}>
               <div className="form-group">
                 <label htmlFor="title">Title *</label>
@@ -234,6 +234,7 @@ export const TodoList: React.FC = () => {
                   value={newTodo.title}
                   onChange={handleChange}
                   required
+                  placeholder="Enter task title"
                 />
               </div>
 
@@ -244,6 +245,7 @@ export const TodoList: React.FC = () => {
                   name="description"
                   value={newTodo.description}
                   onChange={handleChange}
+                  placeholder="Add task details"
                 />
               </div>
 
@@ -256,9 +258,9 @@ export const TodoList: React.FC = () => {
                   onChange={handleChange}
                   required
                 >
-                  <option value="low">Low</option>
-                  <option value="medium">Medium</option>
-                  <option value="high">High</option>
+                  <option value="low">LOW</option>
+                  <option value="medium">MEDIUM</option>
+                  <option value="high">HIGH</option>
                 </select>
               </div>
 
@@ -274,8 +276,8 @@ export const TodoList: React.FC = () => {
               </div>
 
               <div className="form-actions">
-                <button type="button" onClick={() => setShowForm(false)}>Cancel</button>
-                <button type="submit">Create Task</button>
+                <button type="button" className="cancel-button" onClick={() => setShowForm(false)}>Cancel</button>
+                <button type="submit" className="submit-button">Create Task</button>
               </div>
             </form>
           </motion.div>
@@ -311,7 +313,7 @@ export const TodoList: React.FC = () => {
                 <th>Priority</th>
                 <th>Details</th>
                 <th>Due Date</th>
-                <th>Actions</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -348,24 +350,21 @@ export const TodoList: React.FC = () => {
                   <td>
                     <span className="priority-badge">
                       {getPriorityIcon(todo.priority)}
-                      {todo.priority}
+                      {todo.priority.toUpperCase()}
                     </span>
                   </td>
                   <td>{todo.description || '-'}</td>
                   <td>{todo.dueDate ? formatDate(todo.dueDate) : '-'}</td>
                   <td>
-                    <div className="action-buttons">
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => handleDeleteClick(todo)}
-                        className="action-button delete-button"
-                        title="Delete Task"
-                      >
-                        {React.createElement(FaTrash as React.ComponentType<IconBaseProps>, { 'aria-hidden': true })}
-                        <span className="button-label">Delete</span>
-                      </motion.button>
-                    </div>
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => handleDeleteClick(todo)}
+                      className="delete-button"
+                      title="Delete Task"
+                    >
+                      {React.createElement(FaTrash as React.ComponentType<IconBaseProps>, { 'aria-hidden': true })}
+                    </motion.button>
                   </td>
                 </motion.tr>
               ))}
