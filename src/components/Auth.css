@@ -1,16 +1,30 @@
 .auth-form-container {
   max-width: 400px;
-  margin: 0 auto;
+  width: 100%;
   padding: 2rem;
-  background-color: white;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  background-color: var(--secondary);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  animation: slideUp 0.5s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .auth-form-container h2 {
   text-align: center;
   margin-bottom: 1.5rem;
-  color: #007bff;
+  color: var(--primary);
+  font-size: 1.8rem;
+  font-weight: 600;
 }
 
 .form-group {
@@ -21,59 +35,83 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: #333;
+  color: var(--text);
+  font-size: 0.9rem;
 }
 
 .form-group input {
   width: 100%;
   padding: 0.75rem;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 4px;
   font-size: 1rem;
+  transition: var(--transition);
+}
+
+.form-group input:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
 }
 
 .auth-button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #007bff;
+  background-color: var(--primary);
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 4px;
   font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.3s;
+  transition: var(--transition);
 }
 
 .auth-button:hover {
-  background-color: #0056b3;
+  background-color: var(--primary-dark);
+  transform: translateY(-1px);
 }
 
 .auth-button:disabled {
-  background-color: #ccc;
+  background-color: var(--primary-light);
   cursor: not-allowed;
-}
-
-.error-message {
-  color: #dc3545;
-  margin-bottom: 1rem;
-  padding: 0.5rem;
-  background-color: #f8d7da;
-  border-radius: 5px;
+  transform: none;
 }
 
 .auth-toggle {
   text-align: center;
   margin-top: 1.5rem;
+  color: var(--text-light);
 }
 
 .toggle-button {
   background: none;
   border: none;
-  color: #007bff;
+  color: var(--primary);
   cursor: pointer;
   font-weight: 500;
+  padding: 0;
+  margin-left: 0.5rem;
+  transition: var(--transition);
 }
 
 .toggle-button:hover {
+  color: var(--primary-dark);
   text-decoration: underline;
+}
+
+.error-message {
+  background-color: rgba(211, 47, 47, 0.1);
+  color: var(--error);
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+}
+
+.error-message::before {
+  content: '⚠';
+  margin-right: 8px;
+  font-size: 1.1rem;
 } 
