@@ -12,6 +12,7 @@ interface TodoContextType {
   createTodo: (todo: Partial<Todo>) => Promise<void>;
   updateTodo: (id: string, updates: Partial<Todo>) => Promise<void>;
   deleteTodo: (id: string) => Promise<void>;
+  fetchTodos: () => Promise<void>;
 }
 
 const TodoContext = createContext<TodoContextType | undefined>(undefined);
@@ -154,7 +155,8 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
         error,
         createTodo,
         updateTodo,
-        deleteTodo
+        deleteTodo,
+        fetchTodos
       }}
     >
       {children}
