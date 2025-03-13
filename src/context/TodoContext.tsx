@@ -33,7 +33,8 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Configure axios headers with authentication token
   const getAuthHeaders = () => ({
     headers: {
-      'Authorization': `Bearer ${user?.token}`
+      'Authorization': `Bearer ${user?.token}`,
+      'Content-Type': 'application/json'
     }
   });
 
@@ -49,8 +50,9 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const response = await axios.get<Todo[]>(`${API_BASE_URL}/todos`, getAuthHeaders());
       setTodos(response.data);
       setError(null);
-    } catch (err) {
-      setError('Failed to fetch todos');
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.message || 'Failed to fetch todos';
+      setError(errorMsg);
       console.error('Error fetching todos:', err);
     } finally {
       setLoading(false);
@@ -84,8 +86,9 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.error('Failed to add event to Google Calendar:', err);
         }
       }
-    } catch (err) {
-      setError('Failed to create todo');
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.message || 'Failed to create todo';
+      setError(errorMsg);
       console.error('Error creating todo:', err);
       throw err;
     }
@@ -93,15 +96,18 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateTodo = async (id: string, updates: Partial<Todo>) => {
     try {
+      console.log('Updating todo:', id, updates);
       const response = await axios.put<Todo>(
         `${API_BASE_URL}/todos/${id}`,
         updates,
         getAuthHeaders()
       );
+      console.log('Update response:', response.data);
       setTodos(prev => prev.map(todo => todo.id === id ? response.data : todo));
       setError(null);
-    } catch (err) {
-      setError('Failed to update todo');
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.message || 'Failed to update todo';
+      setError(errorMsg);
       console.error('Error updating todo:', err);
       throw err;
     }
@@ -109,14 +115,17 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const deleteTodo = async (id: string) => {
     try {
+      console.log('Deleting todo:', id);
       await axios.delete(
         `${API_BASE_URL}/todos/${id}`,
         getAuthHeaders()
       );
+      console.log('Todo deleted successfully');
       setTodos(prev => prev.filter(todo => todo.id !== id));
       setError(null);
-    } catch (err) {
-      setError('Failed to delete todo');
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.message || 'Failed to delete todo';
+      setError(errorMsg);
       console.error('Error deleting todo:', err);
       throw err;
     }
