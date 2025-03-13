@@ -321,29 +321,143 @@ input:focus {
   font-size: 1.1rem;
 }
 
+.menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.hamburger {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: var(--primary);
+  position: relative;
+  transition: var(--transition);
+}
+
+.hamburger::before,
+.hamburger::after {
+  content: '';
+  position: absolute;
+  width: 24px;
+  height: 2px;
+  background-color: var(--primary);
+  transition: var(--transition);
+}
+
+.hamburger::before {
+  top: -6px;
+}
+
+.hamburger::after {
+  bottom: -6px;
+}
+
+.menu-toggle[aria-expanded="true"] .hamburger {
+  background-color: transparent;
+}
+
+.menu-toggle[aria-expanded="true"] .hamburger::before {
+  transform: rotate(45deg);
+  top: 0;
+}
+
+.menu-toggle[aria-expanded="true"] .hamburger::after {
+  transform: rotate(-45deg);
+  bottom: 0;
+}
+
 @media (max-width: 768px) {
-  .navbar {
-    padding: 1rem;
+  .menu-toggle {
+    display: block;
   }
 
   .nav-links {
-    gap: 1rem;
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: var(--secondary);
+    padding: 1rem;
+    box-shadow: var(--shadow);
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .nav-links.active {
+    display: flex;
+  }
+
+  .nav-link {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    text-align: center;
+  }
+
+  .hero-section {
+    padding: 4rem 1rem;
   }
 
   .hero-section h1 {
-    font-size: 2.5rem;
+    font-size: 2rem;
+    margin-bottom: 1rem;
   }
 
   .hero-section p {
-    font-size: 1.2rem;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
   }
 
   .cta-buttons {
     flex-direction: column;
-    align-items: center;
+    gap: 1rem;
   }
 
-  .features {
-    padding: 4rem 1rem;
+  .cta-primary,
+  .cta-secondary {
+    width: 100%;
+    text-align: center;
   }
+
+  .features-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .auth-form-container {
+    width: 90%;
+    max-width: none;
+    margin: 1rem;
+    padding: 1.5rem;
+  }
+
+  .auth-form-container h2 {
+    font-size: 1.5rem;
+  }
+
+  .auth-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .auth-toggle {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: var(--text-light);
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  line-height: 1.5;
 } 

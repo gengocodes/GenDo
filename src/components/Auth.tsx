@@ -3,13 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import './Auth.css';
 
-interface AuthProps {
-  type: 'login' | 'register';
-}
-
-const Auth: React.FC<AuthProps> = ({ type }) => {
+const Auth: React.FC = () => {
   const navigate = useNavigate();
   const { login, register } = useAuth();
+  const [isRegistering, setIsRegistering] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -29,7 +26,7 @@ const Auth: React.FC<AuthProps> = ({ type }) => {
     setError(null);
 
     try {
-      if (type === 'register') {
+      if (isRegistering) {
         await register(formData.name, formData.email, formData.password);
       } else {
         await login(formData.email, formData.password);
@@ -40,72 +37,86 @@ const Auth: React.FC<AuthProps> = ({ type }) => {
     }
   };
 
+  const toggleMode = () => {
+    setIsRegistering(!isRegistering);
+    setError(null);
+    setFormData({
+      name: '',
+      email: '',
+      password: '',
+    });
+  };
+
   return (
-    <div className="auth-form-container">
-      <h2>{type === 'login' ? 'Login' : 'Create Account'}</h2>
-      {error && <div className="error-message">{error}</div>}
-      <form onSubmit={handleSubmit}>
-        {type === 'register' && (
+    <div className="auth-section">
+      <div className="auth-form-container">
+        <h2>{isRegistering ? 'Create Account' : 'Welcome Back'}</h2>
+        <p className="auth-subtitle">
+          {isRegistering 
+            ? 'Create your account to start managing tasks efficiently' 
+            : 'Sign in to continue managing your tasks'}
+        </p>
+        
+        {error && <div className="error-message">{error}</div>}
+        
+        <form onSubmit={handleSubmit}>
+          {isRegistering && (
+            <div className="form-group">
+              <label htmlFor="name">Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required={isRegistering}
+                placeholder="Enter your name"
+              />
+            </div>
+          )}
+          
           <div className="form-group">
-            <label htmlFor="name">Name</label>
+            <label htmlFor="email">Email</label>
             <input
-              type="text"
-              id="name"
-              name="name"
-              value={formData.name}
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
               onChange={handleChange}
               required
+              placeholder="Enter your email"
             />
           </div>
-        )}
-        <div className="form-group">
-          <label htmlFor="email">Email</label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-          />
+          
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              placeholder="Enter your password"
+              minLength={6}
+            />
+          </div>
+
+          <button type="submit" className="auth-button">
+            {isRegistering ? 'Create Account' : 'Sign In'}
+          </button>
+        </form>
+
+        <div className="auth-toggle">
+          <p>
+            {isRegistering 
+              ? 'Already have an account?' 
+              : "Don't have an account?"}
+          </p>
+          <button className="toggle-button" onClick={toggleMode}>
+            {isRegistering ? 'Sign In' : 'Create Account'}
+          </button>
         </div>
-        <div className="form-group">
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
-        </div>
-        <button type="submit" className="auth-button">
-          {type === 'login' ? 'Login' : 'Register'}
-        </button>
-      </form>
-      <div className="auth-toggle">
-        {type === 'login' ? (
-          <>
-            Don't have an account?
-            <button
-              className="toggle-button"
-              onClick={() => navigate('/register')}
-            >
-              Register
-            </button>
-          </>
-        ) : (
-          <>
-            Already have an account?
-            <button
-              className="toggle-button"
-              onClick={() => navigate('/login')}
-            >
-              Login
-            </button>
-          </>
-        )}
       </div>
     </div>
   );

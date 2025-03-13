@@ -17,8 +17,7 @@ const App: React.FC = () => {
             <Routes>
               <Route path="/" element={<LandingPage />} />
               <Route path="/about" element={<About />} />
-              <Route path="/login" element={<Auth type="login" />} />
-              <Route path="/register" element={<Auth type="register" />} />
+              <Route path="/login" element={<Auth />} />
               <Route
                 path="/dashboard"
                 element={
@@ -27,6 +26,7 @@ const App: React.FC = () => {
                   </PrivateRoute>
                 }
               />
+              <Route path="*" element={<Navigate to="/" />} />
             </Routes>
           </div>
         </TodoProvider>
