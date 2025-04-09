@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import './Settings.css';
 
-const API_BASE_URL = 'http://localhost:5000/api';
+const API_BASE_URL = process.env.RAILWAY_STATIC_URL || 'http://localhost:5000/api';
 
 interface ConnectedAccount {
   provider: string;
