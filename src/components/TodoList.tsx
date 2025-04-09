@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Todo, TodoStatus, TodoPriority } from '../types/todo';
 import { useTodo } from '../context/TodoContext';
-import { IconType, IconBaseProps } from 'react-icons';
+import { IconBaseProps } from 'react-icons';
 import { FaTrash, FaClock, FaExclamationCircle, FaCircle, FaCheckCircle, FaPlayCircle, FaArchive } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
 import './TodoList.css';

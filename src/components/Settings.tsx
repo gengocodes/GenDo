@@ -21,6 +21,7 @@ export const Settings: React.FC = () => {
 
   useEffect(() => {
     checkConnectedAccounts();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const checkConnectedAccounts = async () => {
