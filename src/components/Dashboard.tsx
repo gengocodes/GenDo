@@ -9,8 +9,10 @@ const Dashboard: React.FC = () => {
   const { fetchTodos } = useTodo();
 
   useEffect(() => {
-    fetchTodos();
-  }, [fetchTodos]);
+    if (user) {
+      fetchTodos();
+    }
+  }, [user]);
 
   return (
     <div className="dashboard">

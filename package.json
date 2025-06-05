@@ -30,12 +30,12 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "set PORT=3000 && react-scripts start",
+    "start": "react-scripts start",
     "build": "CI='' react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "server": "nodemon server/server.js",
-    "client": "npm start",
+    "client": "set PORT=3000 && react-scripts start",
     "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "eslintConfig": {

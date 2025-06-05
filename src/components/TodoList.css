@@ -1,7 +1,7 @@
 .todo-list {
   max-width: 1200px;
-  margin: 2rem auto;
   padding: 0 1.5rem;
+  margin-top: 5rem;
 }
 
 .todo-container {
@@ -63,7 +63,7 @@
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.2s ease;
-  background: #f8f9fa;
+  background: #d6d6d6;
 }
 
 .search-bar input:focus {
@@ -472,4 +472,4 @@
     width: 32px;
     height: 32px;
   }
-} 
+}
