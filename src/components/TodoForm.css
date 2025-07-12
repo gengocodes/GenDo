@@ -15,7 +15,7 @@
   background: white;
   padding: 2rem;
   border-radius: 8px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   width: 90%;
   max-width: 500px;
   max-height: 90vh;
@@ -24,7 +24,7 @@
 
 .todo-form h2 {
   margin-bottom: 1.5rem;
-  color: var(--text);
+  color: #2c3e50;
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -37,7 +37,7 @@
   display: block;
   margin-bottom: 0.5rem;
   font-weight: 500;
-  color: var(--text);
+  color: #2c3e50;
 }
 
 .form-group input,
@@ -50,6 +50,7 @@
   font-size: 1rem;
   transition: all 0.3s ease;
   background-color: white;
+  color: #000000;
 }
 
 .form-group textarea {
@@ -62,12 +63,12 @@
 .form-group textarea:focus,
 .form-group select:focus {
   outline: none;
-  border-color: var(--primary);
+  border-color: #e53935;
   box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
 }
 
 .form-group input[type="datetime-local"] {
-  color: var(--text);
+  color: #000000;
 }
 
 .form-group select {
@@ -83,7 +84,7 @@
 .form-group small {
   display: block;
   margin-top: 0.5rem;
-  color: var(--text-light);
+  color: #6c757d;
   font-size: 0.8rem;
 }
 
@@ -105,14 +106,14 @@
 }
 
 .form-actions button[type="submit"] {
-  background-color: var(--primary);
+  background-color: #e53935;
   color: white;
 }
 
 .form-actions button[type="button"] {
   background-color: transparent;
   border: 1px solid #ddd;
-  color: var(--text);
+  color: #2c3e50;
 }
 
 .form-actions button:hover {
@@ -120,7 +121,7 @@
 }
 
 .form-actions button[type="submit"]:hover {
-  background-color: var(--primary-dark);
+  background-color: #c62828;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 

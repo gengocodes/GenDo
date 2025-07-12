@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { useTodo } from "../context/TodoContext";
@@ -12,7 +14,7 @@ const Dashboard: React.FC = () => {
     if (user) {
       fetchTodos();
     }
-  }, [user]);
+  }, [user, fetchTodos]);
 
   return (
     <div className="dashboard">

@@ -1,15 +1,15 @@
 .todo-item {
   background-color: white;
   border-radius: 8px;
-  box-shadow: var(--shadow);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 1rem;
   margin-bottom: 1rem;
-  transition: var(--transition);
+  transition: all 0.3s ease;
 }
 
 .todo-item:hover {
   transform: translateY(-2px);
-  box-shadow: var(--shadow-hover);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 .todo-item.completed {
@@ -18,7 +18,7 @@
 
 .todo-item.completed .todo-title {
   text-decoration: line-through;
-  color: var(--text-light);
+  color: #95a5a6;
 }
 
 .view-mode {
@@ -39,12 +39,12 @@
   width: 20px;
   height: 20px;
   cursor: pointer;
-  accent-color: var(--primary);
+  accent-color: #e53935;
 }
 
 .todo-title {
   font-size: 1rem;
-  color: var(--text);
+  color: #2c3e50;
   word-break: break-word;
 }
 
@@ -60,11 +60,13 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 1rem;
+  color: #000000;
+  background-color: #fff;
 }
 
 .edit-mode input:focus {
   outline: none;
-  border-color: var(--primary);
+  border-color: #e53935;
   box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.2);
 }
 
@@ -82,12 +84,12 @@
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
-  transition: var(--transition);
+  transition: all 0.3s ease;
 }
 
 .todo-actions button:first-child,
 .edit-actions button:first-child {
-  background-color: var(--primary);
+  background-color: #e53935;
   color: white;
 }
 
@@ -95,7 +97,7 @@
 .edit-actions button:last-child {
   background-color: transparent;
   border: 1px solid #ddd;
-  color: var(--text);
+  color: #2c3e50;
 }
 
 .todo-actions button:hover,
@@ -104,7 +106,7 @@
 }
 
 .todo-actions button:first-child:hover {
-  background-color: var(--primary-dark);
+  background-color: #c62828;
 }
 
 .todo-actions button:last-child:hover {

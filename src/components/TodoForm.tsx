@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useTodo } from '../context/TodoContext';
-import { Todo, TodoStatus, TodoPriority } from '../types/todo';
-import './TodoForm.css';
+import React, { useState } from "react";
+import { useTodo } from "../context/TodoContext";
+import { Todo, TodoStatus, TodoPriority } from "../types/todo";
+import "./TodoForm.css";
 
 interface TodoFormProps {
   onClose: () => void;
@@ -11,11 +11,11 @@ interface TodoFormProps {
 const TodoForm: React.FC<TodoFormProps> = ({ onClose, editTodo }) => {
   const { createTodo, updateTodo } = useTodo();
   const [formData, setFormData] = useState({
-    title: editTodo?.title || '',
-    description: editTodo?.description || '',
-    priority: editTodo?.priority || 'medium',
-    dueDate: editTodo?.dueDate || '',
-    tags: editTodo?.tags?.join(', ') || ''
+    title: editTodo?.title || "",
+    description: editTodo?.description || "",
+    priority: editTodo?.priority || "medium",
+    dueDate: editTodo?.dueDate || "",
+    tags: editTodo?.tags?.join(", ") || "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -23,7 +23,10 @@ const TodoForm: React.FC<TodoFormProps> = ({ onClose, editTodo }) => {
     try {
       const todoData = {
         ...formData,
-        tags: formData.tags.split(',').map((tag: string) => tag.trim()).filter(Boolean)
+        tags: formData.tags
+          .split(",")
+          .map((tag: string) => tag.trim())
+          .filter(Boolean),
       };
 
       if (editTodo) {
@@ -31,28 +34,34 @@ const TodoForm: React.FC<TodoFormProps> = ({ onClose, editTodo }) => {
       } else {
         await createTodo({
           ...todoData,
-          status: 'in_progress' as TodoStatus,
+          status: "in_progress" as TodoStatus,
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         });
       }
       onClose();
     } catch (err) {
-      console.error('Failed to save todo:', err);
+      console.error("Failed to save todo:", err);
     }
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   return (
     <div className="todo-form-overlay">
       <div className="todo-form">
-        <button className="close-button" onClick={onClose}>×</button>
-        <h2>{editTodo ? 'Edit Task' : 'New Task'}</h2>
-        
+        <button className="close-button" onClick={onClose}>
+          ×
+        </button>
+        <h2>{editTodo ? "Edit Task" : "New Task"}</h2>
+
         <form onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="title">Title</label>
@@ -63,6 +72,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onClose, editTodo }) => {
               value={formData.title}
               onChange={handleChange}
               required
+              className="text-black"
               placeholder="Enter task title"
             />
           </div>
@@ -76,6 +86,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onClose, editTodo }) => {
               onChange={handleChange}
               rows={3}
               placeholder="Enter task description"
+              className="text-black"
             />
           </div>
 
@@ -86,6 +97,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onClose, editTodo }) => {
               name="priority"
               value={formData.priority}
               onChange={handleChange}
+              className="text-black"
             >
               <option value="low">Low</option>
               <option value="medium">Medium</option>
@@ -101,6 +113,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onClose, editTodo }) => {
               name="dueDate"
               value={formData.dueDate}
               onChange={handleChange}
+              className="text-black"
             />
           </div>
 
@@ -113,6 +126,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onClose, editTodo }) => {
               value={formData.tags}
               onChange={handleChange}
               placeholder="e.g. work, personal, urgent"
+              className="text-black"
             />
           </div>
 
@@ -121,7 +135,7 @@ const TodoForm: React.FC<TodoFormProps> = ({ onClose, editTodo }) => {
               Cancel
             </button>
             <button type="submit" className="submit-button">
-              {editTodo ? 'Update Task' : 'Create Task'}
+              {editTodo ? "Update Task" : "Create Task"}
             </button>
           </div>
         </form>
@@ -130,4 +144,4 @@ const TodoForm: React.FC<TodoFormProps> = ({ onClose, editTodo }) => {
   );
 };
 
-export default TodoForm; 
+export default TodoForm;

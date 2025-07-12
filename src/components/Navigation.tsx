@@ -1,14 +1,18 @@
+'use client'
+
 import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
+import "./Navigation.css";
 
 const Navigation: React.FC = () => {
-  const location = useLocation();
+  const pathname = usePathname();
   const { isAuthenticated, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const isActive = (path: string) => {
-    return location.pathname === path ? "active" : "";
+    return pathname === path ? "active" : "";
   };
 
   const toggleMenu = () => {
@@ -22,7 +26,7 @@ const Navigation: React.FC = () => {
 
   return (
     <nav className="navbar">
-      <Link to={isAuthenticated ? "/dashboard" : "/"} className="navbar-brand">
+      <Link href={isAuthenticated ? "/dashboard" : "/"} className="navbar-brand">
         <span role="img" aria-label="check mark">
           ✓
         </span>
@@ -41,14 +45,14 @@ const Navigation: React.FC = () => {
         {!isAuthenticated && (
           <>
             <Link
-              to="/"
+              href="/"
               className={`nav-link ${isActive("/")}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Home
             </Link>
             <Link
-              to="/about"
+              href="/about"
               className={`nav-link ${isActive("/about")}`}
               onClick={() => setIsMenuOpen(false)}
             >
@@ -59,14 +63,14 @@ const Navigation: React.FC = () => {
         {isAuthenticated ? (
           <>
             <Link
-              to="/dashboard"
+              href="/dashboard"
               className={`nav-link ${isActive("/dashboard")}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Dashboard
             </Link>
             <Link
-              to="/settings"
+              href="/settings"
               className={`nav-link ${isActive("/settings")}`}
               onClick={() => setIsMenuOpen(false)}
             >
@@ -82,7 +86,7 @@ const Navigation: React.FC = () => {
           </>
         ) : (
           <Link
-            to="/login"
+            href="/login"
             className={`nav-link ${isActive("/login")}`}
             onClick={() => setIsMenuOpen(false)}
           >

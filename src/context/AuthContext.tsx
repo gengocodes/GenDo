@@ -1,11 +1,15 @@
+'use client'
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import axios from 'axios';
+
+// Configure axios to include credentials (cookies)
+axios.defaults.withCredentials = true;
 
 interface User {
   _id: string;
   name: string;
   email: string;
-  token: string;
 }
 
 interface AuthContextType {
@@ -15,7 +19,11 @@ interface AuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
   register: (name: string, email: string, password: string) => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
+}
+
+interface AuthProviderProps {
+  children: ReactNode;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,40 +36,73 @@ export const useAuth = () => {
   return context;
 };
 
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
-const API_URL = process.env.RAILWAY_STATIC_URL || 'http://localhost:5000';
+// Helper function to get user-friendly error messages
+const getErrorMessage = (error: any): string => {
+  if (error.response?.data?.message) {
+    return error.response.data.message;
+  }
+  
+  if (error.response?.status === 409) {
+    return 'Email is already taken. Please use a different email or try logging in.';
+  }
+  
+  if (error.response?.status === 401) {
+    return 'Invalid email or password. Please check your credentials and try again.';
+  }
+  
+  if (error.response?.status === 400) {
+    return 'Please check your input and try again.';
+  }
+  
+  if (error.response?.status === 500) {
+    return 'Server error. Please try again later.';
+  }
+  
+  if (error.code === 'NETWORK_ERROR' || error.message?.includes('Network Error')) {
+    return 'Network error. Please check your internet connection and try again.';
+  }
+  
+  return 'An unexpected error occurred. Please try again.';
+};
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Check if user is logged in
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+  // Check authentication status on mount
+  const checkAuthStatus = async () => {
+    try {
+      const response = await axios.get('/api/auth/me');
+      setUser(response.data);
+    } catch (err) {
+      // User is not authenticated
+      setUser(null);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
+  };
+
+  useEffect(() => {
+    checkAuthStatus();
   }, []);
 
   const login = async (email: string, password: string) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.post(`${API_URL}/api/auth/login`, {
+      const response = await axios.post('/api/auth/login', {
         email,
         password
       });
       
-      const userData = response.data;
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      // After successful login, check auth status to get user data
+      await checkAuthStatus();
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred during login');
+      const errorMessage = getErrorMessage(err);
+      setError(errorMessage);
+      console.error('Login error:', err);
+      // Don't throw the error, just set the error state
     } finally {
       setLoading(false);
     }
@@ -71,25 +112,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.post(`${API_URL}/api/auth`, {
+      const response = await axios.post('/api/auth', {
         name,
         email,
         password
       });
       
-      const userData = response.data;
-      setUser(userData);
-      localStorage.setItem('user', JSON.stringify(userData));
+      // Registration successful but no token - user needs to login
+      setError(null);
+      return response.data.message || 'Registration successful. Please login to continue.';
     } catch (err: any) {
-      setError(err.response?.data?.message || 'An error occurred during registration');
+      const errorMessage = getErrorMessage(err);
+      setError(errorMessage);
+      console.error('Registration error:', err);
+      throw err; // Still throw for registration to handle in component
     } finally {
       setLoading(false);
     }
   };
 
-  const logout = () => {
-    localStorage.removeItem('user');
-    setUser(null);
+  const logout = async () => {
+    try {
+      await axios.post('/api/auth/logout');
+      setUser(null);
+    } catch (err) {
+      console.error('Logout error:', err);
+      // Even if logout API fails, clear local state
+      setUser(null);
+    }
   };
 
   return (
@@ -100,11 +150,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       isAuthenticated: !!user,
       login, 
       register, 
-      logout 
+      logout
     }}>
       {children}
     </AuthContext.Provider>
   );
-};
-
-export default AuthContext; 
+}; 

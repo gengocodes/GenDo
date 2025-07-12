@@ -3,7 +3,7 @@ import { useAuth } from '../context/AuthContext';
 import axios from 'axios';
 import './Settings.css';
 
-const API_BASE_URL = process.env.RAILWAY_STATIC_URL || 'http://localhost:5000/api';
+const API_BASE_URL = '/api';
 
 interface ConnectedAccount {
   provider: string;
@@ -20,7 +20,7 @@ export const Settings: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    checkConnectedAccounts();
+    // checkConnectedAccounts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

@@ -63,7 +63,8 @@
   border-radius: 12px;
   font-size: 1rem;
   transition: all 0.2s ease;
-  background: #d6d6d6;
+  background: #fff;
+  color: #000000;
 }
 
 .search-bar input:focus {
@@ -97,8 +98,8 @@
   border: 2px solid #eee;
   border-radius: 10px;
   font-size: 0.95rem;
-  color: #2c3e50;
-  background: #f8f9fa;
+  color: #000000;
+  background: #fff;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -158,6 +159,7 @@
   border-radius: 8px;
   font-size: 1em;
   transition: all 0.2s ease;
+  color: #000000;
 }
 
 .form-group input:focus,
@@ -231,6 +233,7 @@
   padding: 16px;
   border-bottom: 1px solid #eee;
   vertical-align: middle;
+  color: #000000;
 }
 
 .todo-table tr:last-child td {
@@ -345,6 +348,7 @@
   background: #f8f9fa;
   white-space: nowrap;
   transition: all 0.2s ease;
+  color: #000000;
 }
 
 .priority-badge:hover {
@@ -399,6 +403,7 @@
 .empty-state p {
   margin: 0;
   line-height: 1.6;
+  color: #000000;
 }
 
 .empty-state p:first-child {

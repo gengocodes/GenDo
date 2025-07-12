@@ -11,6 +11,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 1.5rem 2rem;
+  border-radius: 0 0 16px 16px;
 }
 
 .dashboard-header h1 {

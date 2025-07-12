@@ -42,6 +42,7 @@ export const TodoItem: React.FC<TodoItemProps> = ({ todo, onUpdate, onDelete }) 
             value={editTitle}
             onChange={(e) => setEditTitle(e.target.value)}
             autoFocus
+            className="text-black"
           />
           <div className="edit-actions">
             <button type="submit">Save</button>

@@ -1,16 +1,18 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import './Auth.css';
+'use client'
+
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "../context/AuthContext";
+import "./Auth.css";
 
 const Auth: React.FC = () => {
-  const navigate = useNavigate();
-  const { login, register } = useAuth();
+  const router = useRouter();
+  const { login, register, loading, error: authError, isAuthenticated } = useAuth();
   const [isRegistering, setIsRegistering] = useState(false);
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
+    name: "",
+    email: "",
+    password: "",
   });
   const [error, setError] = useState<string | null>(null);
 
@@ -28,12 +30,29 @@ const Auth: React.FC = () => {
     try {
       if (isRegistering) {
         await register(formData.name, formData.email, formData.password);
+        // Registration successful - show success message and don't redirect
+        setError(null);
       } else {
         await login(formData.email, formData.password);
+        // Check if login was successful (user is authenticated)
+        if (isAuthenticated) {
+          router.push("/dashboard");
+        }
+        // If not authenticated, the error will be shown by the AuthContext
       }
-      navigate('/dashboard');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+    } catch (err: any) {
+      // Handle registration errors
+      if (err.response?.status === 409) {
+        setError("Email is already taken. Please use a different email or try logging in.");
+      } else if (err.response?.status === 400) {
+        setError("Please check your input and try again.");
+      } else if (err.response?.status === 500) {
+        setError("Server error. Please try again later.");
+      } else if (err.code === 'NETWORK_ERROR' || err.message?.includes('Network Error')) {
+        setError("Network error. Please check your internet connection and try again.");
+      } else {
+        setError(err.response?.data?.message || "An unexpected error occurred. Please try again.");
+      }
     }
   };
 
@@ -41,27 +60,30 @@ const Auth: React.FC = () => {
     setIsRegistering(!isRegistering);
     setError(null);
     setFormData({
-      name: '',
-      email: '',
-      password: '',
+      name: "",
+      email: "",
+      password: "",
     });
   };
 
+  // Show auth error from context if available
+  const displayError = authError || error;
+
   return (
     <div className="auth-section">
-      <button className="back-button" onClick={() => navigate('/')}>
+      <button className="back-button" onClick={() => router.push("/")}>
         ← Back to Home
       </button>
       <div className="auth-form-container">
-        <h2>{isRegistering ? 'Create Account' : 'Welcome Back'}</h2>
+        <h2>{isRegistering ? "Create Account" : "Welcome Back"}</h2>
         <p className="auth-subtitle">
-          {isRegistering 
-            ? 'Create your account to start managing tasks efficiently' 
-            : 'Sign in to continue managing your tasks'}
+          {isRegistering
+            ? "Create your account to start managing tasks efficiently"
+            : "Sign in to continue managing your tasks"}
         </p>
-        
-        {error && <div className="error-message">{error}</div>}
-        
+
+        {displayError && <div className="error-message">{displayError}</div>}
+
         <form onSubmit={handleSubmit}>
           {isRegistering && (
             <div className="form-group">
@@ -73,11 +95,12 @@ const Auth: React.FC = () => {
                 value={formData.name}
                 onChange={handleChange}
                 required={isRegistering}
+                className="text-black"
                 placeholder="Enter your name"
               />
             </div>
           )}
-          
+
           <div className="form-group">
             <label htmlFor="email">Email</label>
             <input
@@ -87,10 +110,11 @@ const Auth: React.FC = () => {
               value={formData.email}
               onChange={handleChange}
               required
+              className="text-black"
               placeholder="Enter your email"
             />
           </div>
-          
+
           <div className="form-group">
             <label htmlFor="password">Password</label>
             <input
@@ -100,24 +124,28 @@ const Auth: React.FC = () => {
               value={formData.password}
               onChange={handleChange}
               required
+              className="text-black"
               placeholder="Enter your password"
               minLength={6}
             />
           </div>
 
-          <button type="submit" className="auth-button">
-            {isRegistering ? 'Create Account' : 'Sign In'}
+          <button type="submit" className="auth-button" disabled={loading}>
+            {loading 
+              ? (isRegistering ? "Creating Account..." : "Signing In...") 
+              : (isRegistering ? "Create Account" : "Sign In")
+            }
           </button>
         </form>
 
         <div className="auth-toggle">
           <p>
-            {isRegistering 
-              ? 'Already have an account?' 
+            {isRegistering
+              ? "Already have an account?"
               : "Don't have an account?"}
           </p>
           <button className="toggle-button" onClick={toggleMode}>
-            {isRegistering ? 'Sign In' : 'Create Account'}
+            {isRegistering ? "Sign In" : "Create Account"}
           </button>
         </div>
       </div>
@@ -125,4 +153,4 @@ const Auth: React.FC = () => {
   );
 };
 
-export default Auth; 
+export default Auth;

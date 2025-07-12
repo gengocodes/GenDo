@@ -1,3 +1,5 @@
+'use client'
+
 import React, { useState } from 'react';
 import { Todo, TodoStatus, TodoPriority } from '../types/todo';
 import { useTodo } from '../context/TodoContext';
@@ -21,7 +23,7 @@ const DeleteConfirmation: React.FC<DeleteConfirmationProps> = ({ todo, onConfirm
       exit={{ scale: 0.5, opacity: 0 }}
     >
       <h3>Delete Task</h3>
-      <p>Are you sure you want to delete "{todo.title}"?</p>
+      <p>Are you sure you want to delete &quot;{todo.title}&quot;?</p>
       <p className="warning">This action cannot be undone.</p>
       <div className="confirmation-actions">
         <button className="cancel-btn" onClick={onCancel}>Cancel</button>
@@ -189,6 +191,7 @@ export const TodoList: React.FC = () => {
               placeholder="Search tasks..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
+              className="text-black"
             />
           </div>
         </div>
@@ -196,7 +199,7 @@ export const TodoList: React.FC = () => {
         <div className="filters">
           <div className="filter-group">
             <label>Status:</label>
-            <select value={filter} onChange={(e) => setFilter(e.target.value as TodoStatus)}>
+            <select value={filter} onChange={(e) => setFilter(e.target.value as TodoStatus)} className="text-black">
               <option value="in_progress">Active Tasks</option>
               <option value="completed">Completed</option>
               <option value="archived">Archived</option>
@@ -205,7 +208,7 @@ export const TodoList: React.FC = () => {
 
           <div className="filter-group">
             <label>Priority:</label>
-            <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value as TodoPriority | 'all')}>
+            <select value={priorityFilter} onChange={(e) => setPriorityFilter(e.target.value as TodoPriority | 'all')} className="text-black">
               <option value="all">ALL</option>
               <option value="low">LOW</option>
               <option value="medium">MEDIUM</option>
@@ -235,6 +238,7 @@ export const TodoList: React.FC = () => {
                   onChange={handleChange}
                   required
                   placeholder="Enter task title"
+                  className="text-black"
                 />
               </div>
 
@@ -246,6 +250,7 @@ export const TodoList: React.FC = () => {
                   value={newTodo.description}
                   onChange={handleChange}
                   placeholder="Add task details"
+                  className="text-black"
                 />
               </div>
 
@@ -257,6 +262,7 @@ export const TodoList: React.FC = () => {
                   value={newTodo.priority}
                   onChange={handleChange}
                   required
+                  className="text-black"
                 >
                   <option value="low">LOW</option>
                   <option value="medium">MEDIUM</option>
@@ -272,6 +278,7 @@ export const TodoList: React.FC = () => {
                   name="dueDate"
                   value={newTodo.dueDate}
                   onChange={handleChange}
+                  className="text-black"
                 />
               </div>
 

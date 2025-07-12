@@ -18,7 +18,7 @@ const About: React.FC = () => {
           <div className="about-section">
             <h2>Our Mission</h2>
             <p>
-              We believe that staying organized shouldn't be complicated. That's why we've created 
+              We believe that staying organized shouldn&apos;t be complicated. That&apos;s why we&apos;ve created 
               Gendo - a task management solution that combines simplicity with powerful features 
               to help you achieve more.
             </p>
@@ -28,7 +28,7 @@ const About: React.FC = () => {
             <h2>What Sets Us Apart</h2>
             <p>
               Unlike traditional to-do apps, Gendo focuses on providing a seamless experience 
-              with real-time updates, intuitive interface, and robust security. We're committed 
+              with real-time updates, intuitive interface, and robust security. We&apos;re committed 
               to continuous improvement and user satisfaction.
             </p>
           </div>

@@ -1,9 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+'use client'
+
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { Todo } from '../types/todo';
 import { useAuth } from './AuthContext';
-
-const API_BASE_URL = process.env.RAILWAY_STATIC_URL || 'http://localhost:5000/api';
 
 interface TodoContextType {
   todos: Todo[];
@@ -39,16 +39,10 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   });
 
-  useEffect(() => {
-    if (user) {
-      fetchTodos();
-    }
-  }, [user]);
-
-  const fetchTodos = async () => {
+  const fetchTodos = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get<Todo[]>(`${API_BASE_URL}/todos`, getAuthHeaders());
+      const response = await axios.get<Todo[]>('/api/todos', getAuthHeaders());
       // Map _id to id in the response data
       const todosWithId = response.data.map(todo => ({
         ...todo,
@@ -63,12 +57,18 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      fetchTodos();
+    }
+  }, [user, fetchTodos]);
 
   const createTodo = async (todo: Partial<Todo>) => {
     try {
       const response = await axios.post<Todo>(
-        `${API_BASE_URL}/todos`, 
+        '/api/todos', 
         todo,
         getAuthHeaders()
       );
@@ -79,24 +79,6 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
       };
       setTodos(prev => [...prev, newTodo]);
       setError(null);
-      
-      // Add to Google Calendar if dueDate is provided
-      if (todo.dueDate) {
-        try {
-          await axios.post(
-            `${API_BASE_URL}/calendar/add`,
-            {
-              title: todo.title,
-              description: todo.description,
-              startTime: todo.dueDate,
-              endTime: todo.dueDate
-            },
-            getAuthHeaders()
-          );
-        } catch (err) {
-          console.error('Failed to add event to Google Calendar:', err);
-        }
-      }
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Failed to create todo';
       setError(errorMsg);
@@ -109,7 +91,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Updating todo:', id, updates);
       const response = await axios.put<Todo>(
-        `${API_BASE_URL}/todos/${id}`,
+        `/api/todos/${id}`,
         updates,
         getAuthHeaders()
       );
@@ -133,7 +115,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Deleting todo:', id);
       await axios.delete(
-        `${API_BASE_URL}/todos/${id}`,
+        `/api/todos/${id}`,
         getAuthHeaders()
       );
       console.log('Todo deleted successfully');
@@ -162,6 +144,4 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
       {children}
     </TodoContext.Provider>
   );
-};
-
-export default TodoContext; 
+}; 
