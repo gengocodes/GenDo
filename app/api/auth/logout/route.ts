@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     response.cookies.set('jwt_token', '', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: 'lax', // Match login route
       maxAge: 0, // Expire immediately
       path: '/'
     });

@@ -76,11 +76,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    console.log('Environment variables check passed');
     await connectDB();
+    console.log('Database connected successfully');
+    
     const body = await request.json();
     const { email, password } = body;
 
     console.log('Login attempt for:', email);
+    console.log('Request body received:', { email, hasPassword: !!password });
 
     // Validation
     if (!email || !password) {
@@ -101,8 +105,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Find user
-    const user = await User.findOne({ email });
+    // Find user (normalize email like in registration)
+    const normalizedEmail = email.toLowerCase().trim();
+    console.log('Searching for user with normalized email:', normalizedEmail);
+    const user = await User.findOne({ email: normalizedEmail });
+    console.log('User search result:', user ? 'User found' : 'User not found');
+    
     if (!user) {
       console.log('User not found:', email);
       return NextResponse.json(
@@ -112,7 +120,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Check password using bcrypt directly
+    console.log('Comparing passwords for user:', email);
     const isMatch = await bcrypt.compare(password, user.password);
+    console.log('Password comparison result:', isMatch ? 'Match' : 'No match');
+    
     if (!isMatch) {
       console.log('Invalid password for:', email);
       return NextResponse.json(
@@ -124,7 +135,9 @@ export async function POST(request: NextRequest) {
     console.log('Login successful for:', email);
     
     // Generate JWT token
+    console.log('Generating JWT token for user ID:', user._id);
     const token = generateToken(user._id);
+    console.log('JWT token generated successfully');
     
     // Create response with user data (without token)
     const response = NextResponse.json({
@@ -135,17 +148,31 @@ export async function POST(request: NextRequest) {
     });
     
     // Set JWT token as HTTP-only cookie
+    console.log('Setting JWT cookie with settings:', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      maxAge: 10 * 60
+    });
+    
     response.cookies.set('jwt_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production', // true in production
-      sameSite: 'strict',
+      sameSite: 'lax', // Changed from 'strict' to 'lax' for better compatibility
       maxAge: 10 * 60, // 10 minutes in seconds
       path: '/'
     });
     
+    console.log('JWT cookie set successfully');
+    
     return response;
   } catch (error: any) {
     console.error('Login error:', error);
+    console.error('Error details:', {
+      name: error.name,
+      message: error.message,
+      stack: error.stack
+    });
     
     // Handle specific error types
     if (error.name === 'ValidationError') {
@@ -159,6 +186,15 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { message: 'Email already exists' },
         { status: 400 }
+      );
+    }
+    
+    // Check for MongoDB connection errors
+    if (error.name === 'MongoNetworkError' || error.message?.includes('MongoDB')) {
+      console.error('MongoDB connection error during login');
+      return NextResponse.json(
+        { message: 'Database connection error. Please try again.' },
+        { status: 500 }
       );
     }
     
