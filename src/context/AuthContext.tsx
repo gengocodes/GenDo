@@ -17,7 +17,7 @@ interface AuthContextType {
   loading: boolean;
   error: string | null;
   isAuthenticated: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<boolean>;
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -87,7 +87,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuthStatus();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (email: string, password: string): Promise<boolean> => {
     try {
       setLoading(true);
       setError(null);
@@ -98,11 +98,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       
       // After successful login, check auth status to get user data
       await checkAuthStatus();
+      return true; // Login successful
     } catch (err: any) {
       const errorMessage = getErrorMessage(err);
       setError(errorMessage);
       console.error('Login error:', err);
-      // Don't throw the error, just set the error state
+      return false; // Login failed
     } finally {
       setLoading(false);
     }

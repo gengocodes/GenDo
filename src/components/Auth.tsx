@@ -33,12 +33,11 @@ const Auth: React.FC = () => {
         // Registration successful - show success message and don't redirect
         setError(null);
       } else {
-        await login(formData.email, formData.password);
-        // Check if login was successful (user is authenticated)
-        if (isAuthenticated) {
+        const loginSuccess = await login(formData.email, formData.password);
+        // If login was successful, redirect to dashboard
+        if (loginSuccess) {
           router.push("/dashboard");
         }
-        // If not authenticated, the error will be shown by the AuthContext
       }
     } catch (err: any) {
       // Handle registration errors
