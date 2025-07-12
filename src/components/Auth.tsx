@@ -15,6 +15,7 @@ const Auth: React.FC = () => {
     password: "",
   });
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -26,11 +27,19 @@ const Auth: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setSuccessMessage(null);
 
     try {
       if (isRegistering) {
         await register(formData.name, formData.email, formData.password);
-        // Registration successful - show success message and don't redirect
+        // Registration successful - switch to login mode
+        setIsRegistering(false);
+        setFormData({
+          name: "",
+          email: formData.email, // Keep email for convenience
+          password: ""
+        });
+        setSuccessMessage("Registration successful! Please login with your credentials.");
         setError(null);
       } else {
         const loginSuccess = await login(formData.email, formData.password);
@@ -58,6 +67,7 @@ const Auth: React.FC = () => {
   const toggleMode = () => {
     setIsRegistering(!isRegistering);
     setError(null);
+    setSuccessMessage(null);
     setFormData({
       name: "",
       email: "",
@@ -82,6 +92,7 @@ const Auth: React.FC = () => {
         </p>
 
         {displayError && <div className="error-message">{displayError}</div>}
+        {successMessage && <div className="success-message">{successMessage}</div>}
 
         <form onSubmit={handleSubmit}>
           {isRegistering && (

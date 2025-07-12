@@ -82,6 +82,7 @@
 .section-title {
   text-align: center;
   font-size: 2.5rem;
+  font-weight: 750;
   color: #333;
   margin-bottom: 1rem;
 }
@@ -121,7 +122,8 @@
 }
 
 .feature-card h3 {
-  color: #007bff;
+  color: #333;
+  font-weight: 5 00;
   margin-bottom: 15px;
   font-size: 1.5rem;
 }

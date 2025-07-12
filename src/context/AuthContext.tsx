@@ -96,8 +96,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         password
       });
       
-      // After successful login, check auth status to get user data
-      await checkAuthStatus();
+      // Set user data directly from login response instead of making another request
+      setUser({
+        _id: response.data._id,
+        name: response.data.name,
+        email: response.data.email
+      });
       return true; // Login successful
     } catch (err: any) {
       const errorMessage = getErrorMessage(err);
