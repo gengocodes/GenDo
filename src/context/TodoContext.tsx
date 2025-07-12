@@ -31,18 +31,10 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Configure axios headers with authentication token
-  const getAuthHeaders = () => ({
-    headers: {
-      'Authorization': `Bearer ${user?.token}`,
-      'Content-Type': 'application/json'
-    }
-  });
-
   const fetchTodos = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await axios.get<Todo[]>('/api/todos', getAuthHeaders());
+      const response = await axios.get<Todo[]>('/api/todos');
       // Map _id to id in the response data
       const todosWithId = response.data.map(todo => ({
         ...todo,
@@ -57,7 +49,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } finally {
       setLoading(false);
     }
-  }, [user]);
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -69,8 +61,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const response = await axios.post<Todo>(
         '/api/todos', 
-        todo,
-        getAuthHeaders()
+        todo
       );
       // Map _id to id in the response data
       const newTodo = {
@@ -92,8 +83,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.log('Updating todo:', id, updates);
       const response = await axios.put<Todo>(
         `/api/todos/${id}`,
-        updates,
-        getAuthHeaders()
+        updates
       );
       console.log('Update response:', response.data);
       // Map _id to id in the response data
@@ -115,8 +105,7 @@ export const TodoProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       console.log('Deleting todo:', id);
       await axios.delete(
-        `/api/todos/${id}`,
-        getAuthHeaders()
+        `/api/todos/${id}`
       );
       console.log('Todo deleted successfully');
       setTodos(prev => prev.filter(todo => todo.id !== id));

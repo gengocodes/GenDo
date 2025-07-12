@@ -26,9 +26,7 @@ export const Settings: React.FC = () => {
 
   const checkConnectedAccounts = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/auth/connected-accounts`, {
-        headers: { Authorization: `Bearer ${user?.token}` }
-      });
+      const response = await axios.get(`${API_BASE_URL}/auth/connected-accounts`);
       setAccounts(response.data);
       setError(null);
     } catch (error) {
@@ -42,9 +40,7 @@ export const Settings: React.FC = () => {
   const handleConnect = async (provider: string) => {
     try {
       setError(null);
-      const response = await axios.get(`${API_BASE_URL}/auth/${provider.toLowerCase()}/connect`, {
-        headers: { Authorization: `Bearer ${user?.token}` }
-      });
+      const response = await axios.get(`${API_BASE_URL}/auth/${provider.toLowerCase()}/connect`);
       
       const authWindow = window.open(
         response.data.authUrl,
@@ -92,8 +88,7 @@ export const Settings: React.FC = () => {
       setError(null);
       await axios.post(
         `${API_BASE_URL}/auth/${provider.toLowerCase()}/disconnect`,
-        {},
-        { headers: { Authorization: `Bearer ${user?.token}` } }
+        {}
       );
       await checkConnectedAccounts();
     } catch (error) {
