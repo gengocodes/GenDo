@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useState } from "react";
 import Link from "next/link";
@@ -26,7 +26,10 @@ const Navigation: React.FC = () => {
 
   return (
     <nav className="navbar">
-      <Link href={isAuthenticated ? "/dashboard" : "/"} className="navbar-brand">
+      <Link
+        href={isAuthenticated ? "/dashboard" : "/"}
+        className="navbar-brand"
+      >
         <span role="img" aria-label="check mark">
           ✓
         </span>
@@ -42,7 +45,7 @@ const Navigation: React.FC = () => {
       </button>
 
       <div className={`nav-links ${isMenuOpen ? "active" : ""}`}>
-        {!isAuthenticated && (
+        {!isAuthenticated ? (
           <>
             <Link
               href="/"
@@ -58,9 +61,15 @@ const Navigation: React.FC = () => {
             >
               About
             </Link>
+            <Link
+              href="/login"
+              className={`nav-link ${isActive("/login")}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Login
+            </Link>
           </>
-        )}
-        {isAuthenticated ? (
+        ) : (
           <>
             <Link
               href="/dashboard"
@@ -84,14 +93,6 @@ const Navigation: React.FC = () => {
               Logout
             </button>
           </>
-        ) : (
-          <Link
-            href="/login"
-            className={`nav-link ${isActive("/login")}`}
-            onClick={() => setIsMenuOpen(false)}
-          >
-            Login
-          </Link>
         )}
       </div>
     </nav>

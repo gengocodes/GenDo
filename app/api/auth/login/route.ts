@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
+import User from '../../../../lib/models/User';
 
 // Connect to MongoDB
 const connectDB = async () => {
@@ -19,33 +20,6 @@ const connectDB = async () => {
     throw error;
   }
 };
-
-// User Schema
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Name is required']
-  },
-  email: {
-    type: String,
-    required: [true, 'Email is required'],
-    unique: true,
-    lowercase: true
-  },
-  password: {
-    type: String,
-    required: [true, 'Password is required']
-  }
-}, {
-  timestamps: true
-});
-
-// Compare password method
-userSchema.methods.matchPassword = async function(enteredPassword: string) {
-  return await bcrypt.compare(enteredPassword, this.password);
-};
-
-const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 // Generate JWT token with 10 minutes expiry
 const generateToken = (id: string) => {
