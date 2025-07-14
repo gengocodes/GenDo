@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
@@ -7,7 +7,13 @@ import "./Auth.css";
 
 const Auth: React.FC = () => {
   const router = useRouter();
-  const { login, register, loading, error: authError, isAuthenticated } = useAuth();
+  const {
+    login,
+    register,
+    loading,
+    error: authError,
+    isAuthenticated,
+  } = useAuth();
   const [isRegistering, setIsRegistering] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -32,34 +38,43 @@ const Auth: React.FC = () => {
     try {
       if (isRegistering) {
         await register(formData.name, formData.email, formData.password);
-        // Registration successful - switch to login mode
         setIsRegistering(false);
         setFormData({
           name: "",
-          email: formData.email, // Keep email for convenience
-          password: ""
+          email: formData.email,
+          password: "",
         });
-        setSuccessMessage("Registration successful! Please login with your credentials.");
+        setSuccessMessage(
+          "Registration successful! Please login with your credentials."
+        );
         setError(null);
       } else {
         const loginSuccess = await login(formData.email, formData.password);
-        // If login was successful, redirect to dashboard
         if (loginSuccess) {
           router.push("/dashboard");
         }
       }
     } catch (err: any) {
-      // Handle registration errors
       if (err.response?.status === 409) {
-        setError("Email is already taken. Please use a different email or try logging in.");
+        setError(
+          "Email is already taken. Please use a different email or try logging in."
+        );
       } else if (err.response?.status === 400) {
         setError("Please check your input and try again.");
       } else if (err.response?.status === 500) {
         setError("Server error. Please try again later.");
-      } else if (err.code === 'NETWORK_ERROR' || err.message?.includes('Network Error')) {
-        setError("Network error. Please check your internet connection and try again.");
+      } else if (
+        err.code === "NETWORK_ERROR" ||
+        err.message?.includes("Network Error")
+      ) {
+        setError(
+          "Network error. Please check your internet connection and try again."
+        );
       } else {
-        setError(err.response?.data?.message || "An unexpected error occurred. Please try again.");
+        setError(
+          err.response?.data?.message ||
+            "An unexpected error occurred. Please try again."
+        );
       }
     }
   };
@@ -80,9 +95,6 @@ const Auth: React.FC = () => {
 
   return (
     <div className="auth-section">
-      <button className="back-button" onClick={() => router.push("/")}>
-        ← Back to Home
-      </button>
       <div className="auth-form-container">
         <h2>{isRegistering ? "Create Account" : "Welcome Back"}</h2>
         <p className="auth-subtitle">
@@ -92,7 +104,9 @@ const Auth: React.FC = () => {
         </p>
 
         {displayError && <div className="error-message">{displayError}</div>}
-        {successMessage && <div className="success-message">{successMessage}</div>}
+        {successMessage && (
+          <div className="success-message">{successMessage}</div>
+        )}
 
         <form onSubmit={handleSubmit}>
           {isRegistering && (
@@ -141,10 +155,22 @@ const Auth: React.FC = () => {
           </div>
 
           <button type="submit" className="auth-button" disabled={loading}>
-            {loading 
-              ? (isRegistering ? "Creating Account..." : "Signing In...") 
-              : (isRegistering ? "Create Account" : "Sign In")
-            }
+            {loading ? (
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <span className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></span>
+                {isRegistering ? "Creating Account..." : "Signing In..."}
+              </span>
+            ) : isRegistering ? (
+              "Create Account"
+            ) : (
+              "Sign In"
+            )}
           </button>
         </form>
 

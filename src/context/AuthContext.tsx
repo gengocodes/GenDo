@@ -1,7 +1,13 @@
-'use client'
+"use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import axios from 'axios';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import axios from "axios";
 
 // Configure axios to include credentials (cookies)
 axios.defaults.withCredentials = true;
@@ -31,7 +37,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -41,28 +47,31 @@ const getErrorMessage = (error: any): string => {
   if (error.response?.data?.message) {
     return error.response.data.message;
   }
-  
+
   if (error.response?.status === 409) {
-    return 'Email is already taken. Please use a different email or try logging in.';
+    return "Email is already taken. Please use a different email or try logging in.";
   }
-  
+
   if (error.response?.status === 401) {
-    return 'Invalid email or password. Please check your credentials and try again.';
+    return "Invalid email or password. Please check your credentials and try again.";
   }
-  
+
   if (error.response?.status === 400) {
-    return 'Please check your input and try again.';
+    return "Please check your input and try again.";
   }
-  
+
   if (error.response?.status === 500) {
-    return 'Server error. Please try again later.';
+    return "Server error. Please try again later.";
   }
-  
-  if (error.code === 'NETWORK_ERROR' || error.message?.includes('Network Error')) {
-    return 'Network error. Please check your internet connection and try again.';
+
+  if (
+    error.code === "NETWORK_ERROR" ||
+    error.message?.includes("Network Error")
+  ) {
+    return "Network error. Please check your internet connection and try again.";
   }
-  
-  return 'An unexpected error occurred. Please try again.';
+
+  return "An unexpected error occurred. Please try again.";
 };
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
@@ -73,7 +82,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Check authentication status on mount
   const checkAuthStatus = async () => {
     try {
-      const response = await axios.get('/api/auth/me');
+      const response = await axios.get("/api/auth/me");
       setUser(response.data);
     } catch (err) {
       // User is not authenticated
@@ -91,22 +100,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.post('/api/auth/login', {
+      const response = await axios.post("/api/auth/login", {
         email,
-        password
+        password,
       });
-      
+
       // Set user data directly from login response instead of making another request
       setUser({
         _id: response.data._id,
         name: response.data.name,
-        email: response.data.email
+        email: response.data.email,
       });
       return true; // Login successful
     } catch (err: any) {
       const errorMessage = getErrorMessage(err);
       setError(errorMessage);
-      console.error('Login error:', err);
+      console.error("Login error:", err);
       return false; // Login failed
     } finally {
       setLoading(false);
@@ -117,19 +126,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.post('/api/auth', {
+      const response = await axios.post("/api/auth", {
         name,
         email,
-        password
+        password,
       });
-      
+
       // Registration successful but no token - user needs to login
       setError(null);
-      return response.data.message || 'Registration successful. Please login to continue.';
+      return (
+        response.data.message ||
+        "Registration successful. Please login to continue."
+      );
     } catch (err: any) {
       const errorMessage = getErrorMessage(err);
       setError(errorMessage);
-      console.error('Registration error:', err);
+      console.error("Registration error:", err);
       throw err; // Still throw for registration to handle in component
     } finally {
       setLoading(false);
@@ -138,26 +150,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const logout = async () => {
     try {
-      await axios.post('/api/auth/logout');
+      await axios.post("/api/auth/logout");
       setUser(null);
     } catch (err) {
-      console.error('Logout error:', err);
+      console.error("Logout error:", err);
       // Even if logout API fails, clear local state
       setUser(null);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ 
-      user, 
-      loading, 
-      error, 
-      isAuthenticated: !!user,
-      login, 
-      register, 
-      logout
-    }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        error,
+        isAuthenticated: !!user,
+        login,
+        register,
+        logout,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
-}; 
+};

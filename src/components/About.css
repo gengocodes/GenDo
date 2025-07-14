@@ -1,5 +1,5 @@
 .about-page {
-  padding-top: 64px;
+  padding-top: 75px;
   min-height: 100vh;
   background-color: #f8f9fa;
 }
@@ -71,7 +71,7 @@
 }
 
 .values-list li::before {
-  content: '→';
+  content: "→";
   color: #e53935;
   position: absolute;
   left: 0;
@@ -115,4 +115,4 @@
   .team-section {
     padding: 2rem;
   }
-} 
+}

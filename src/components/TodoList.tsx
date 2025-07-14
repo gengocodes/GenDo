@@ -43,7 +43,7 @@ export const TodoList: React.FC = () => {
     priority: 'medium' as TodoPriority,
     dueDate: ''
   });
-  const [filter, setFilter] = useState<TodoStatus>('pending');
+  const [filter, setFilter] = useState<TodoStatus>('in_progress');
   const [priorityFilter, setPriorityFilter] = useState<TodoPriority | 'all'>('all');
   const [searchTerm, setSearchTerm] = useState('');
 

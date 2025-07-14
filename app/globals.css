@@ -26,23 +26,31 @@ body {
     rgb(var(--background-start-rgb));
 }
 
-/* Ensure form inputs have proper text color */
-input, textarea, select {
+input,
+textarea,
+select {
   color: #000000 !important;
 }
 
-/* Ensure all text elements are black by default */
-p, span, div, label, h1, h2, h3, h4, h5, h6 {
+p,
+span,
+div,
+label,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   color: #000000;
 }
 
-/* Import component CSS files */
-@import '../src/components/Navigation.css';
-@import '../src/components/Auth.css';
-@import '../src/components/Dashboard.css';
-@import '../src/components/TodoList.css';
-@import '../src/components/TodoItem.css';
-@import '../src/components/TodoForm.css';
-@import '../src/components/LandingPage.css';
-@import '../src/components/About.css';
-@import '../src/components/Settings.css'; 
+@import "../src/components/Navigation.css";
+@import "../src/components/Auth.css";
+@import "../src/components/Dashboard.css";
+@import "../src/components/TodoList.css";
+@import "../src/components/TodoItem.css";
+@import "../src/components/TodoForm.css";
+@import "../src/components/LandingPage.css";
+@import "../src/components/About.css";
+@import "../src/components/Settings.css";
