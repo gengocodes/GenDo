@@ -46,7 +46,7 @@ const About: React.FC = () => {
           </div>
 
           <div className="about-section">
-            <h2 className="font-medium">Tech Stack</h2>
+            <h2 className="font-medium">Technologies Used</h2>
             <ul className="values-list">
               <li>Next.js</li>
               <li>TypeScript</li>
