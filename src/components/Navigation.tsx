@@ -33,7 +33,7 @@ const Navigation: React.FC = () => {
         <span role="img" aria-label="check mark">
           ✓
         </span>
-        Gendo
+        GenDo
       </Link>
 
       <button
